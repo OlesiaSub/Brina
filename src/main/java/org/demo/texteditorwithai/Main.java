@@ -4,9 +4,11 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class Main extends Application {
 
@@ -15,19 +17,22 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(Main.class.getResource("main-view.fxml"));
+        FXMLLoader loader = new FXMLLoader(Main.class.getResource("first-view.fxml"));
         Parent root = loader.load();
-        stage.setTitle("Text Editor with AI");
+        stage.setTitle("Brina");
 
-        /*TODO: set an app icon
-        InputStream iconStream = getClass().getResourceAsStream("/icon.png");
-        Image image = new Image(iconStream);
-        primaryStage.getIcons().add(image);
-         */
-
+        InputStream iconStream = getClass().getResourceAsStream("small-icon.png");
+        Image icon = null;
+        if (iconStream != null) {
+            icon = new Image(iconStream);
+        } else {
+            System.err.println("Icon is not Found!");
+        }
+        stage.getIcons().add(icon);
         Scene scene = new Scene(root, defaultWidth, defaultHeight);
         stage.setScene(scene);
-
+        stage.setResizable(false);
+        stage.centerOnScreen();
         stage.show();
     }
 

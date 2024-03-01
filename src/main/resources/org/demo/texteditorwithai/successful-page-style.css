@@ -1,0 +1,10 @@
+root {
+    -fx-background-color: white;
+}
+
+.success-text {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3d6dac;
+    -fx-font-family: "Baskerville Old Face";
+}

@@ -1,0 +1,95 @@
+.dark-button {
+    -fx-background-color: #3d6dac;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-border-color: #3d6dac;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-margin-right: 10px;
+}
+
+.light-button {
+    -fx-background-color: white;
+    -fx-text-fill: #3d6dac;
+    -fx-font-size: 16px;
+    -fx-margin-right: 10px;
+}
+
+.label {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #101d2f;
+}
+
+.simple-text{
+    -fx-font-size: 16px;
+    -fx-text-fill: #101d2f;
+}
+
+.small-text {
+    -fx-font-size: 10px;
+    -fx-text-fill: grey;
+    -fx-font-weight: lighter
+}
+
+.white-box {
+    -fx-background-color: white;
+}
+
+.login-warning-text{
+    -fx-background-color: #f6ecde ;
+    -fx-border-color: grey;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-text-fill: #e0850c;
+    -fx-font-size: 14px;
+    -fx-font-weight: lighter;
+}
+
+.password-warning-text{
+    -fx-background-color: #f6ecde ;
+    -fx-border-color: grey;
+    -fx-border-width: 1px;
+    -fx-text-fill: #e0850c;
+    -fx-font-size: 14px;
+    -fx-font-weight: lighter;
+    -fx-background-radius: 8px 0 0 8px;
+    -fx-border-radius: 8px 0 0 8px;
+}
+
+.login-field {
+    -fx-background-color: white;
+    -fx-text-fill: grey;
+    -fx-font-size: 16px;
+    -fx-border-color: grey;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+.password-field {
+    -fx-background-color: white;
+    -fx-text-fill: grey;
+    -fx-font-size: 16px;
+    -fx-border-color: grey;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px 0 0 8px;
+    -fx-border-radius: 8px 0 0 8px;
+}
+
+.eye-field {
+    -fx-background-color: white;
+    -fx-text-fill: grey;
+    -fx-font-size: 16px;
+    -fx-border-color: grey;
+    -fx-border-width: 1px;
+    -fx-background-radius: 0 8px 8px 0;
+    -fx-border-radius: 0 8px 8px 0;
+}
+
+.eye-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}

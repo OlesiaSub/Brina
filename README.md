@@ -10,6 +10,20 @@
 - Создавать папки с правами доступа для определенных людей
 - Сохранение документов в разных форматах (pdf, txt, docx)
 
-### Инструкция по установке приложения 
+### Инструкция по установке приложения
 
 ### Вид приложения
+
+
+
+![#101d2f](https://placehold.co/15x15/101d2f/101d2f.png) `#101d2f`
+
+![#194f93](https://placehold.co/15x15/194f93/194f93.png) `#194f93`
+
+![#3d6dac](https://placehold.co/15x15/3d6dac/3d6dac.png) `#3d6dac`
+
+![#80aad7](https://placehold.co/15x15/80aad7/80aad7.png) `#80aad7`
+
+![#f6ecde](https://placehold.co/15x15/f6ecde/f6ecde.png) `#f6ecde`
+
+![#e0850c](https://placehold.co/15x15/e0850c/e0850c.png) `#e0850c`

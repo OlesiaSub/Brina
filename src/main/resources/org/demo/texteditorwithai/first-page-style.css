@@ -1,0 +1,10 @@
+.root {
+    -fx-background-color: #101d2f;
+}
+
+.label {
+    -fx-font-size: 130px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-font-family: "Baskerville Old Face";
+}
