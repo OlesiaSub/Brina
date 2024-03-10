@@ -1,4 +1,9 @@
-package org.demo.texteditorwithai;
+/**
+ * Main является точкой входа в приложение и запускает его,
+ * загружает настройки из файла "config.properties", устанавливает иконку приложения,
+ * создает сцену и запускает основное окно приложения.
+ */
+package org.hse.texteditorwithai;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -12,16 +17,13 @@ import java.io.InputStream;
 
 public class Main extends Application {
 
-    public static final int defaultWidth = 600;
-    public static final int defaultHeight = 400;
-
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(Main.class.getResource("first-view.fxml"));
+        FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/first-view.fxml"));
         Parent root = loader.load();
         stage.setTitle("Brina");
 
-        InputStream iconStream = getClass().getResourceAsStream("small-icon.png");
+        InputStream iconStream = getClass().getResourceAsStream("assets/small-icon.png");
         Image icon = null;
         if (iconStream != null) {
             icon = new Image(iconStream);
@@ -29,7 +31,7 @@ public class Main extends Application {
             System.err.println("Icon is not Found!");
         }
         stage.getIcons().add(icon);
-        Scene scene = new Scene(root, defaultWidth, defaultHeight);
+        Scene scene = new Scene(root, Config.getDefaultWidth(), Config.getDefaultHeight());
         stage.setScene(scene);
         stage.setResizable(false);
         stage.centerOnScreen();

@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane prefHeight="400" prefWidth="600" styleClass="white-box" stylesheets="@sign-in-page-style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.demo.texteditorwithai.SignUpController">
+<Pane prefHeight="400" prefWidth="600" styleClass="white-box" stylesheets="@../css/sign-in-page-style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.hse.texteditorwithai.signing.SignUpController">
     <HBox alignment="CENTER" prefHeight="400" prefWidth="600" styleClass="white-box">
         <padding>
             <Insets top="50.0" />
@@ -36,7 +36,7 @@
                     <Button fx:id="eyeButton" graphicTextGap="1.0" prefHeight="50" prefWidth="50" styleClass="eye-button">
                         <graphic>
                             <ImageView fx:id="eyeImage" fitHeight="27" fitWidth="27" preserveRatio="true">
-                                <Image url="@closed-eye.png"/>
+                                <Image url="@../assets/closed-eye.png"/>
                             </ImageView>
                         </graphic>
                         <font>

@@ -5,6 +5,6 @@
 <?import javafx.scene.text.Text?>
 <VBox alignment="CENTER" xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.demo.texteditorwithai.MainWindowController">
+            fx:controller="org.hse.texteditorwithai.utils.MainWindowController">
 <Text text="Main Window" textAlignment="CENTER"/>
 </VBox>

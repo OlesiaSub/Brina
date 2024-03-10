@@ -4,9 +4,9 @@
 <?import javafx.scene.control.Label?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.demo.texteditorwithai.FirstViewController"
+      fx:controller="org.hse.texteditorwithai.utils.FirstViewController"
       alignment="CENTER"
-      stylesheets="@first-page-style.css">
+      stylesheets="@../css/first-page-style.css">
 
     <Label fx:id="text" text="Brina" styleClass="label"/>
 </VBox>

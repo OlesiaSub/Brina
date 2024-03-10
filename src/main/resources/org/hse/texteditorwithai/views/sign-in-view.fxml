@@ -8,19 +8,19 @@
 
 <Pane prefHeight="400" prefWidth="600"
       style="-fx-background-color: #101d2f"
-      stylesheets="@sign-in-page-style.css"
+      stylesheets="@../css/sign-in-page-style.css"
       xmlns="http://javafx.com/javafx/17.0.2-ea"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.demo.texteditorwithai.SignInController">
+      fx:controller="org.hse.texteditorwithai.signing.SignInController">
 
     <HBox alignment="CENTER_RIGHT" prefHeight="400" prefWidth="600">
         <VBox alignment="CENTER" prefHeight="600" prefWidth="200">
             <ImageView fitHeight="400" fitWidth="150" preserveRatio="true">
-                <Image url="@icon.jpg"/>
+                <Image url="@../assets/icon.jpg"/>
             </ImageView>
         </VBox>
 
-        <VBox prefHeight="600" prefWidth="400" style="-fx-background-color: white;" stylesheets="@sign-in-page-style.css">
+        <VBox prefHeight="600" prefWidth="400" style="-fx-background-color: white;" stylesheets="@../css/sign-in-page-style.css">
             <padding>
                 <Insets bottom="24.0" left="20.0" right="20.0" top="24.0" />
             </padding>
@@ -52,7 +52,7 @@
                     <Button fx:id="eyeButton" graphicTextGap="1.0" prefHeight="50" prefWidth="50" styleClass="eye-button">
                         <graphic>
                             <ImageView fx:id="eyeImage" fitHeight="27" fitWidth="27" preserveRatio="true">
-                                <Image url="@closed-eye.png"/>
+                                <Image url="@../assets/closed-eye.png"/>
                             </ImageView>
                         </graphic>
                         <font>

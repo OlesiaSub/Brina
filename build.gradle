@@ -17,16 +17,13 @@ ext {
   junitVersion = '5.10.0'
 }
 
-sourceCompatibility = '11'
-targetCompatibility = '11'
-
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
   options.encoding = 'UTF-8'
 }
 
 application {
-  mainModule = 'org.demo.texteditorwithai'
-  mainClass = 'org.demo.texteditorwithai.HelloApplication'
+  mainModule = 'org.hse.texteditorwithai'
+  mainClass = 'org.hse.texteditorwithai.HelloApplication'
 }
 
 javafx {

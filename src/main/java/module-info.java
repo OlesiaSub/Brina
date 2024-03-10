@@ -1,4 +1,4 @@
-module org.demo.texteditorwithai {
+module org.hse.texteditorwithai {
     requires javafx.controls;
     requires javafx.fxml;
 
@@ -9,6 +9,10 @@ module org.demo.texteditorwithai {
     requires org.fxmisc.flowless;
 
 
-    opens org.demo.texteditorwithai to javafx.fxml;
-    exports org.demo.texteditorwithai;
+    opens org.hse.texteditorwithai to javafx.fxml;
+    exports org.hse.texteditorwithai;
+    exports org.hse.texteditorwithai.signing;
+    opens org.hse.texteditorwithai.signing to javafx.fxml;
+    exports org.hse.texteditorwithai.utils;
+    opens org.hse.texteditorwithai.utils to javafx.fxml;
 }

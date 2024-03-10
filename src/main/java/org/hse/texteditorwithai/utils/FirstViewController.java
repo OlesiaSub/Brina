@@ -1,4 +1,8 @@
-package org.demo.texteditorwithai;
+/**
+ * FirstViewController показывает первое окно с названием приложения,
+ * затем выполняет переход на окно входа в систему.
+ */
+package org.hse.texteditorwithai.utils;
 
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
@@ -9,17 +13,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.hse.texteditorwithai.Config;
+import org.hse.texteditorwithai.Main;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static org.demo.texteditorwithai.Main.defaultHeight;
-import static org.demo.texteditorwithai.Main.defaultWidth;
 
 public class FirstViewController implements Initializable {
     @FXML
-    public Label text;
+    private Label text;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -35,19 +39,20 @@ public class FirstViewController implements Initializable {
 
         delay.play();
     }
-    protected void loadScene(Stage stage, String fxmlView) throws IOException {
+
+    private void loadScene(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
         Parent logInLoader = loader.load();
-        Scene scene = new Scene(logInLoader, defaultWidth, defaultHeight);
+        Scene scene = new Scene(logInLoader, Config.getDefaultWidth(), Config.getDefaultHeight());
         stage.setScene(scene);
     }
 
-    protected void openWelcomeWindow() {
+    private void openWelcomeWindow() {
         Stage stage = (Stage) text.getScene().getWindow();
         try {
-            loadScene(stage, "sign-in-view.fxml");
+            loadScene(stage, "/org/hse/texteditorwithai/views/sign-in-view.fxml");
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Scene configuration file not found. " + e.getMessage());
         }
     }
 }
