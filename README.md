@@ -1,6 +1,7 @@
-# Text-Editor-with-AI
+| <h1><b>Brina: Text-Editor-with-AI</b></h1> | &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp;|
+|---|---|
+| Редактор документов с возможностью записи текста с помощью голоса. Поддерживает чат gpt, который сможет ответить на вопрос, а также подкорректировать текст, записанный голосовым вводом, по запросу из выпадающего пользователю списка. Также есть возможность создавать папки с документами и давать права доступа определенным людям для просмотра документов. | <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/cd3542ad-55fd-424e-954c-76d0d1f34327" alt="small-icon" width="200" height="200"> |
 
-> Редактор документов с возможностью записи текста с помощью голоса. Поддерживает чат gpt, который сможет ответить на вопрос, а также подкорректировать текст, записанный голосовым вводом, по запросу из выпадающего пользователю списка. Также есть возможность создавать папки с документами и давать права доступа определенным людям для просмотра документов.
 
 ### Возможности пользователя:
 
@@ -14,7 +15,9 @@
 
 ### Текущий вид приложения
 
-<img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/cf516f22-2380-4fa0-a820-64e6cd8436b6" alt="sign-in" width="447" height="319"> &nbsp; &nbsp;&nbsp; <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/9c08785a-ee25-4cfd-9d7a-912c0035ba38" alt="sign-up" width="447" height="319">
+| | |
+|---|---|
+| <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/cf516f22-2380-4fa0-a820-64e6cd8436b6" alt="sign-in" width="447" height="319"> | <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/9c08785a-ee25-4cfd-9d7a-912c0035ba38" alt="sign-up" width="447" height="319"> |
 
 Палитра:
 
