@@ -38,13 +38,14 @@ dependencies {
   }
   implementation('org.kordamp.bootstrapfx:bootstrapfx-core:0.4.0')
   implementation( 'org.fxmisc.richtext:richtextfx:0.11.0')
+  implementation('org.xerial:sqlite-jdbc:3.32.3.3')
 
   testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
 
 test {
-useJUnitPlatform()}
+  useJUnitPlatform()}
 
 jlink {
   imageZip = project.file("${buildDir}/distributions/app-${javafx.platform.classifier}.zip")

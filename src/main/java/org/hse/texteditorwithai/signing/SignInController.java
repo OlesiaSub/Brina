@@ -17,6 +17,8 @@ import javafx.stage.Stage;
 import org.hse.texteditorwithai.Config;
 import org.hse.texteditorwithai.Main;
 
+import client.Client;
+
 import java.io.IOException;
 import java.util.Objects;
 
@@ -31,9 +33,9 @@ public class SignInController {
     @FXML
     private Button eyeButton;
     @FXML
-    private TextField loginField;
+    protected TextField loginField;
     @FXML
-    private PasswordField passwordField;
+    protected PasswordField passwordField;
     @FXML
     private TextField invalidLoginField;
     @FXML
@@ -97,6 +99,19 @@ public class SignInController {
     private void signInButtonClicked() {
         Stage stage = (Stage) signInButton.getScene().getWindow();
         boolean isValid = checkIfFieldsAreEmpty();
+        String username = loginField.getText();
+        String password = passwordField.getText();
+
+        Client client = new Client("localhost", 8080);
+        client.sendMessage("signInUser " + username + " " + password);
+        String response =  client.receiveMessage();
+        if (response.equals("User with this name not found")) {
+            // polsovalelya ne sushestvuet
+        } else if (response.equals("Wrong password")) {
+            // parol ne tot
+        } else if (isValid && response.equals("User logged in")) {
+            enter(stage);
+        }
 
     /*TODO: catch errors and make errors visible for the user --> then enter()
     1) unknown login
@@ -110,10 +125,6 @@ public class SignInController {
 
     }
      */
-
-        if (isValid) {
-            enter(stage);
-        }
 
     }
 
