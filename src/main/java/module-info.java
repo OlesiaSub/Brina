@@ -7,6 +7,7 @@ module org.hse.texteditorwithai {
     requires org.kordamp.bootstrapfx.core;
     requires org.fxmisc.richtext;
     requires org.fxmisc.flowless;
+    requires java.sql;
 
 
     opens org.hse.texteditorwithai to javafx.fxml;

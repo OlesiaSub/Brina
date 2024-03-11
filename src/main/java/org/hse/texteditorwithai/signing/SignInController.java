@@ -17,6 +17,8 @@ import javafx.stage.Stage;
 import org.hse.texteditorwithai.Config;
 import org.hse.texteditorwithai.Main;
 
+import client.Client;
+
 import java.io.IOException;
 import java.util.Objects;
 
@@ -29,15 +31,15 @@ public class SignInController {
     @FXML
     protected Button signUpButton;
     @FXML
+    protected TextField loginField;
+    @FXML
+    protected PasswordField passwordField;
+    @FXML
+    protected TextField invalidLoginField;
+    @FXML
+    protected TextField invalidPasswordField;
+    @FXML
     private Button eyeButton;
-    @FXML
-    private TextField loginField;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private TextField invalidLoginField;
-    @FXML
-    private TextField invalidPasswordField;
     @FXML
     private TextField openedPasswordField;
     @FXML
@@ -79,12 +81,14 @@ public class SignInController {
         boolean isValid = true;
         eyeButton.setOnAction(Event::consume);
         if (loginField.getText().isEmpty()) {
+            invalidLoginField.setText("Enter your login");
             invalidLoginField.setVisible(true);
             isValid = false;
         } else {
             invalidLoginField.setVisible(false);
         }
         if (passwordField.getText().isEmpty()) {
+            invalidPasswordField.setText("Enter your password");
             invalidPasswordField.setVisible(true);
             isValid = false;
         } else {
@@ -97,24 +101,21 @@ public class SignInController {
     private void signInButtonClicked() {
         Stage stage = (Stage) signInButton.getScene().getWindow();
         boolean isValid = checkIfFieldsAreEmpty();
+        String username = loginField.getText();
+        String password = passwordField.getText();
 
-    /*TODO: catch errors and make errors visible for the user --> then enter()
-    1) unknown login
-    2) wrong password
-
-    if(login is not found in DB){
-
-    }
-
-    if(password is wrong for the login){
-
-    }
-     */
-
-        if (isValid) {
+        Client client = new Client("localhost", 8080);
+        client.sendMessage("signInUser " + username + " " + password);
+        String response =  client.receiveMessage();
+        if (response.equals("User with this name not found")) {
+            invalidLoginField.setText("User with this name doesn't exist");
+            invalidLoginField.setVisible(true);
+        } else if (response.equals("Wrong password")) {
+            invalidPasswordField.setText("Wrong password");
+            invalidPasswordField.setVisible(true);
+        } else if (isValid && response.equals("User logged in")) {
             enter(stage);
         }
-
     }
 
     @FXML

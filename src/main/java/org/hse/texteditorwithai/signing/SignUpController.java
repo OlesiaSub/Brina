@@ -5,6 +5,7 @@
  */
 package org.hse.texteditorwithai.signing;
 
+import client.Client;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
@@ -34,10 +35,20 @@ public class SignUpController extends SignInController {
     private void signUpButtonClicked() {
         Stage stage = (Stage) signUpButton.getScene().getWindow();
         boolean isValid = checkIfFieldsAreEmpty();
+        String username = loginField.getText();
+        String password = passwordField.getText();
+        Client client = new Client("localhost", 8080);
+        client.sendMessage("signUpUser " + username + " " + password);
+        String response =  client.receiveMessage();
         if (isValid) {
-            try{
-                loadScene(stage, "/org/hse/texteditorwithai/views/successful-sign-up-view.fxml");
-            } catch (IOException e){
+            try {
+                if (response.equals("User with the same name already exists")) {
+                    invalidLoginField.setText("User with this name already exists");
+                    invalidLoginField.setVisible(true);
+                } else if (response.equals("User is registered")) {
+                    loadScene(stage, "/org/hse/texteditorwithai/views/successful-sign-up-view.fxml");
+                }
+            } catch (IOException e) {
                 System.err.println("Scene configuration file not found. " + e.getMessage());
             }
             stage.setResizable(true);
