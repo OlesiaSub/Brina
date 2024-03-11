@@ -43,7 +43,8 @@ public class SignUpController extends SignInController {
         if (isValid) {
             try {
                 if (response.equals("User with the same name already exists")) {
-                    // sorry pridymay noviy nick
+                    invalidLoginField.setText("User with this name already exists");
+                    invalidLoginField.setVisible(true);
                 } else if (response.equals("User is registered")) {
                     loadScene(stage, "/org/hse/texteditorwithai/views/successful-sign-up-view.fxml");
                 }

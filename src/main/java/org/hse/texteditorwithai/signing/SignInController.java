@@ -31,15 +31,15 @@ public class SignInController {
     @FXML
     protected Button signUpButton;
     @FXML
-    private Button eyeButton;
-    @FXML
     protected TextField loginField;
     @FXML
     protected PasswordField passwordField;
     @FXML
-    private TextField invalidLoginField;
+    protected TextField invalidLoginField;
     @FXML
-    private TextField invalidPasswordField;
+    protected TextField invalidPasswordField;
+    @FXML
+    private Button eyeButton;
     @FXML
     private TextField openedPasswordField;
     @FXML
@@ -81,12 +81,14 @@ public class SignInController {
         boolean isValid = true;
         eyeButton.setOnAction(Event::consume);
         if (loginField.getText().isEmpty()) {
+            invalidLoginField.setText("Enter your login");
             invalidLoginField.setVisible(true);
             isValid = false;
         } else {
             invalidLoginField.setVisible(false);
         }
         if (passwordField.getText().isEmpty()) {
+            invalidPasswordField.setText("Enter your password");
             invalidPasswordField.setVisible(true);
             isValid = false;
         } else {
@@ -106,26 +108,14 @@ public class SignInController {
         client.sendMessage("signInUser " + username + " " + password);
         String response =  client.receiveMessage();
         if (response.equals("User with this name not found")) {
-            // polsovalelya ne sushestvuet
+            invalidLoginField.setText("User with this name doesn't exist");
+            invalidLoginField.setVisible(true);
         } else if (response.equals("Wrong password")) {
-            // parol ne tot
+            invalidPasswordField.setText("Wrong password");
+            invalidPasswordField.setVisible(true);
         } else if (isValid && response.equals("User logged in")) {
             enter(stage);
         }
-
-    /*TODO: catch errors and make errors visible for the user --> then enter()
-    1) unknown login
-    2) wrong password
-
-    if(login is not found in DB){
-
-    }
-
-    if(password is wrong for the login){
-
-    }
-     */
-
     }
 
     @FXML
