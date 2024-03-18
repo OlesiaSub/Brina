@@ -46,10 +46,10 @@ public class Client {
     }
 
     public static void main(String[] args) {
-        //Client client = new Client("localhost", 8080);
-        //client.sendMessage("addUser B-E-D-A 1337");
-        //String response = client.receiveMessage();
-        //System.out.println("Server response: " + response);
-        //client.stop();
+        Client client = new Client("localhost", 8080);
+        client.sendMessage("addUser B-E-D-A 1337");
+        String response = client.receiveMessage();
+        System.out.println("Server response: " + response);
+        client.stop();
     }
 }

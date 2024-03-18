@@ -8,7 +8,7 @@ public class Connector {
     public static void connect() {
         Connection connector = null;
         try {
-            String url = "jdbc:sqlite:/Users/syberlord/Text-Editor-with-AI-local/database/database.db";
+            String url = "jdbc:sqlite:C:/Users/uliya/Downloads/java-new-project/something_projwcts_things/Text-Editor-with-AI/database/database.db";
             connector = DriverManager.getConnection(url);
 
             System.out.println("Connection to SQLite has been established.");
