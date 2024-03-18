@@ -1,8 +1,3 @@
-/**
- * Main является точкой входа в приложение и запускает его,
- * загружает настройки из файла "config.properties", устанавливает иконку приложения,
- * создает сцену и запускает основное окно приложения.
- */
 package org.hse.texteditorwithai;
 
 import javafx.application.Application;
@@ -15,10 +10,20 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Main является точкой входа в приложение и запускает его,
+ * загружает настройки из файла "config.properties", устанавливает иконку приложения,
+ * создает сцену и запускает основное окно приложения.
+ */
 public class Main extends Application {
+
+    public static void main(String[] args) {
+        launch();
+    }
 
     @Override
     public void start(Stage stage) throws IOException {
+
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/first-view.fxml"));
         Parent root = loader.load();
         stage.setTitle("Brina");
@@ -36,9 +41,5 @@ public class Main extends Application {
         stage.setResizable(false);
         stage.centerOnScreen();
         stage.show();
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 }

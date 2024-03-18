@@ -1,4 +1,6 @@
 package database;
+import org.hse.texteditorwithai.Config;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -8,7 +10,7 @@ public class Connector {
     public static void connect() {
         Connection connector = null;
         try {
-            String url = "jdbc:sqlite:/Users/syberlord/Text-Editor-with-AI-local/database/database.db";
+            String url = "jdbc:sqlite:" + Config.getPathToJDBC();
             connector = DriverManager.getConnection(url);
 
             System.out.println("Connection to SQLite has been established.");

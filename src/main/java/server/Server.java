@@ -1,5 +1,7 @@
 package server;
 
+import org.hse.texteditorwithai.Config;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,7 +21,7 @@ public class Server {
         try {
             serverSocket = new ServerSocket(port);
             System.out.println("Server started. Waiting for clients...");
-            String url = "jdbc:sqlite:/Users/syberlord/Text-Editor-with-AI-local/database/database.db";
+            String url = "jdbc:sqlite:" + Config.getPathToJDBC();
             connection = DriverManager.getConnection(url);
             System.out.println("Connection to SQLite has been established.");
         } catch (IOException | SQLException e) {

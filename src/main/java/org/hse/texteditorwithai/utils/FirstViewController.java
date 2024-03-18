@@ -1,7 +1,3 @@
-/**
- * FirstViewController показывает первое окно с названием приложения,
- * затем выполняет переход на окно входа в систему.
- */
 package org.hse.texteditorwithai.utils;
 
 import javafx.animation.FadeTransition;
@@ -20,7 +16,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-
+/**
+ * FirstViewController показывает первое окно с названием приложения,
+ * затем выполняет переход на окно входа в систему.
+ */
 public class FirstViewController implements Initializable {
     @FXML
     private Label text;
