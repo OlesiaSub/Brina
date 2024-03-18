@@ -28,7 +28,7 @@ public class Config {
             }
             if(scannedPathToJDBC.isEmpty()){
                 Scanner scanner = new Scanner(System.in);
-                System.out.print("Enter the path to the SQlite JDBC library: ");
+                System.out.print("Enter the path to the Database: ");
                 scannedPathToJDBC = scanner.nextLine();
                 try (FileWriter writer = new FileWriter(filePath)) {
                     writer.write(scannedPathToJDBC);
