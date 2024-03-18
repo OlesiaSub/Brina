@@ -1,8 +1,3 @@
-/**
- * SignUpController управляет окном регистрации в приложение,
- * отображает ошибки при некорректном введении данных,
- * осуществляет переход на главное окно приложения при успешной регистрации.
- */
 package org.hse.texteditorwithai.signing;
 
 import client.Client;
@@ -12,6 +7,11 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * SignUpController управляет окном регистрации в приложение,
+ * отображает ошибки при некорректном введении данных,
+ * осуществляет переход на главное окно приложения при успешной регистрации.
+ */
 public class SignUpController extends SignInController {
     @FXML
     private Button backButton;

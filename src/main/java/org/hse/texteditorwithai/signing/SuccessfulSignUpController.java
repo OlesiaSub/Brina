@@ -1,7 +1,3 @@
-/**
- * SuccessfulSignUpController осуществляет переход с приветственной надписью для новых пользователей
- * на главное окно приложения после успешной регистрации.
- */
 package org.hse.texteditorwithai.signing;
 
 import javafx.animation.FadeTransition;
@@ -16,6 +12,10 @@ import org.hse.texteditorwithai.Main;
 
 import java.io.IOException;
 
+/**
+ * SuccessfulSignUpController осуществляет переход с приветственной надписью для новых пользователей
+ * на главное окно приложения после успешной регистрации.
+ */
 public class SuccessfulSignUpController {
 
     @FXML

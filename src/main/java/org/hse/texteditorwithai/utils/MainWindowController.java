@@ -1,7 +1,3 @@
-/**
- * MainWindowController управляет главным окном приложения,
- * отображает документы, доступные пользователю.
- */
 package org.hse.texteditorwithai.utils;
 
 import javafx.fxml.FXML;
@@ -17,6 +13,10 @@ import richtext.RichTextDemo;
 
 import java.io.IOException;
 
+/**
+ * MainWindowController управляет главным окном приложения,
+ * отображает документы, доступные пользователю.
+ */
 public class MainWindowController {
     @FXML
     private Button Enter;
