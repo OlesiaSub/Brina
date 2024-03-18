@@ -13,6 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.hse.texteditorwithai.Config;
 import org.hse.texteditorwithai.Main;
+import richtext.RichTextDemo;
 
 import java.io.IOException;
 
@@ -34,16 +35,13 @@ public class MainWindowController {
         Scene scene = new Scene(logInLoader, Config.getDefaultWidth(), Config.getDefaultHeight());
         stage.setScene(scene);
     }
-
     @FXML
     private void openCreateButton() {
         Stage stage = (Stage) create_new.getScene().getWindow();
-        try {
-            openButton(stage, "/org/hse/texteditorwithai/views/new-document-view.fxml");
-        } catch (IOException e) {
-            System.err.println("Scene configuration file not found. " + e.getMessage());
-        }
+        RichTextDemo richTextWindow = new RichTextDemo();
+        richTextWindow.start(stage);
     }
+
 
     @FXML
     private void openCollabButton() {
