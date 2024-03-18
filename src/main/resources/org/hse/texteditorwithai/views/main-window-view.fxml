@@ -1,10 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.text.Text?>
-<VBox alignment="CENTER" xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.hse.texteditorwithai.utils.MainWindowController">
-<Text text="Main Window" textAlignment="CENTER"/>
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx" spacing="10"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.hse.texteditorwithai.utils.MainWindowController"
+      style="-fx-background-color: white"
+      stylesheets="@../css/main-page-style.css">
+    <Button  fx:id="create_new" onAction="#openCreateButton"
+             styleClass="file-button" text = "Create new project">
+    </Button>
+
+    <Button fx:id="collab" onAction="#openCollabButton"
+            styleClass="file-button" text = "Collaboration">
+    </Button>
+
+    <Button fx:id="my" onAction="#openMyProdButton"
+            styleClass="file-button" text = "My projects">
+    </Button>
+
 </VBox>
+

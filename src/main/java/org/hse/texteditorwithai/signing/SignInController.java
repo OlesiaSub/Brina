@@ -1,20 +1,17 @@
 package org.hse.texteditorwithai.signing;
 
-import client.Client;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.*;
+import javafx.scene.image.*;
 import javafx.stage.Stage;
 import org.hse.texteditorwithai.Config;
 import org.hse.texteditorwithai.Main;
+
+import client.Client;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -109,7 +106,7 @@ public class SignInController {
 
         Client client = new Client("localhost", 8080);
         client.sendMessage("signInUser " + username + " " + password);
-        String response = client.receiveMessage();
+        String response =  client.receiveMessage();
         if (response.equals("User with this name not found")) {
             invalidLoginField.setText("User with this name doesn't exist");
             invalidLoginField.setVisible(true);
