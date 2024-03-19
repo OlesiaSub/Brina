@@ -9,9 +9,11 @@ package richtext;
 import javafx.application.Application;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -29,6 +31,10 @@ import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.StyledTextArea;
 import org.fxmisc.richtext.TextExt;
 import org.fxmisc.richtext.model.*;
+import org.hse.texteditorwithai.Config;
+import org.hse.texteditorwithai.Main;
+import org.hse.texteditorwithai.signing.SignInController;
+import org.hse.texteditorwithai.signing.SignUpController;
 import org.reactfx.SuspendableNo;
 import org.reactfx.util.Either;
 import org.reactfx.util.Tuple2;
@@ -172,6 +178,24 @@ public class RichTextDemo extends Application {
         CheckBox wrapToggle = new CheckBox("Wrap");
         wrapToggle.setSelected(true);
         area.wrapTextProperty().bind(wrapToggle.selectedProperty());
+
+        Button BackBtn = new Button();
+        BackBtn.getStyleClass().add("back");
+        BackBtn.setOnAction(e -> {
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/org/hse/texteditorwithai/views/main-window-view.fxml"));
+            Parent pageLoader = null;
+            try {
+                pageLoader = loader.load();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            Scene scene = new Scene(pageLoader, primaryStage.getWidth(), primaryStage.getHeight());
+            primaryStage.setScene(scene);
+            area.requestFocus();
+        });
+        BackBtn.setPrefWidth(25);
+        BackBtn.setPrefHeight(25);
+        BackBtn.setTooltip(new Tooltip("Back"));
         Button undoBtn = createButton("undo", area::undo, "Undo");
         Button redoBtn = createButton("redo", area::redo, "Redo");
         Button cutBtn = createButton("cut", area::cut, "Cut");
@@ -368,7 +392,7 @@ public class RichTextDemo extends Application {
             }
         });
 
-        ToolBar toolBar1 = new ToolBar(
+        ToolBar toolBar1 = new ToolBar(BackBtn,
                 loadBtn, saveBtn,  new Separator(Orientation.VERTICAL),
                 undoBtn, redoBtn, new Separator(Orientation.VERTICAL),
                 cutBtn, copyBtn, pasteBtn, new Separator(Orientation.VERTICAL),
@@ -396,6 +420,7 @@ public class RichTextDemo extends Application {
         area.requestFocus();
         primaryStage.show();
     }
+
 
 
     public Button createButton(String styleClass, Runnable action, String toolTip) {
