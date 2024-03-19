@@ -9,14 +9,18 @@ package richtext;
 import javafx.application.Application;
 import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -46,9 +50,6 @@ public class RichTextDemo extends Application {
     public static final String RTFX_FILE_EXTENSION = ".rtf";
 
     public static void main(String[] args) {
-        // The following properties are required on Linux for improved text rendering
-        //System.setProperty("prism.lcdtext", "false");
-        //System.setProperty("prism.text", "t2k");
         launch(args);
     }
 
@@ -188,15 +189,42 @@ public class RichTextDemo extends Application {
         ToggleButton alignCenterBtn = createToggleButton(alignmentGrp, "align-center", this::alignCenter, "Align center");
         ToggleButton alignRightBtn = createToggleButton(alignmentGrp, "align-right", this::alignRight, "Align right");
         ToggleButton alignJustifyBtn = createToggleButton(alignmentGrp, "align-justify", this::alignJustify, "Justify");
+
+        HBox HBoxParagraphBackground = new HBox();
+        HBoxParagraphBackground.setStyle("-fx-background-color: white; -fx-alignment: center; -fx-spacing: 5px;");
+        HBoxParagraphBackground.setPadding(new Insets(10));
         ColorPicker paragraphBackgroundPicker = new ColorPicker();
+        paragraphBackgroundPicker.setStyle(" -fx-color-label-visible: false;");
+        Text paragraphBackgroundText = new Text("Paragraph background");
+        paragraphBackgroundText.setStyle("-fx-text-alignment: left; -fx-alignment: center-left; -fx-font-size: 12px");
+        HBoxParagraphBackground.getChildren().addAll(paragraphBackgroundPicker, paragraphBackgroundText);
+
         ComboBox<Integer> sizeCombo = new ComboBox<>(FXCollections.observableArrayList(5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 28, 32, 36, 40, 48, 56, 64, 72));
+        sizeCombo.setStyle(" -fx-color-label-visible: false;");
         sizeCombo.getSelectionModel().select(Integer.valueOf(12));
         sizeCombo.setTooltip(new Tooltip("Font size"));
         ComboBox<String> familyCombo = new ComboBox<>(FXCollections.observableList(Font.getFamilies()));
+        familyCombo.setStyle(" -fx-color-label-visible: false;");
         familyCombo.getSelectionModel().select("Serif");
         familyCombo.setTooltip(new Tooltip("Font family"));
+
+        HBox HBoxText = new HBox();
+        HBoxText.setStyle("-fx-background-color: white; -fx-alignment: center; -fx-spacing: 5px;");
+        HBoxText.setPadding(new Insets(10));
         ColorPicker textColorPicker = new ColorPicker(Color.BLACK);
+        textColorPicker.setStyle(" -fx-color-label-visible: false;");
+        Text textColorText = new Text("Text");
+        textColorText.setStyle("-fx-text-alignment: left; -fx-alignment: center-left;-fx-font-size: 12px");
+        HBoxText.getChildren().addAll( textColorPicker, textColorText);
+
+        HBox HBoxBackground = new HBox();
+        HBoxBackground.setStyle("-fx-background-color: white; -fx-alignment: center; -fx-spacing: 5px;");
+        HBoxBackground.setPadding(new Insets(10));
         ColorPicker backgroundColorPicker = new ColorPicker();
+        backgroundColorPicker.setStyle(" -fx-color-label-visible: false;");
+        Text backgroundColorText = new Text("Background");
+        backgroundColorText.setStyle("-fx-text-alignment: left; -fx-alignment: center-left; -fx-font-size: 12px");
+        HBoxBackground.getChildren().addAll(backgroundColorPicker, backgroundColorText);
 
         paragraphBackgroundPicker.setTooltip(new Tooltip("Paragraph background"));
         textColorPicker.setTooltip(new Tooltip("Text color"));
@@ -342,27 +370,30 @@ public class RichTextDemo extends Application {
 
         ToolBar toolBar1 = new ToolBar(
                 loadBtn, saveBtn,  new Separator(Orientation.VERTICAL),
-                wrapToggle, new Separator(Orientation.VERTICAL),
                 undoBtn, redoBtn, new Separator(Orientation.VERTICAL),
                 cutBtn, copyBtn, pasteBtn, new Separator(Orientation.VERTICAL),
                 boldBtn, italicBtn, underlineBtn, strikeBtn, new Separator(Orientation.VERTICAL),
                 alignLeftBtn, alignCenterBtn, alignRightBtn, alignJustifyBtn, new Separator(Orientation.VERTICAL),
                 increaseIndentBtn, decreaseIndentBtn, new Separator(Orientation.VERTICAL),
                 insertImageBtn, new Separator(Orientation.VERTICAL),
-                paragraphBackgroundPicker);
-        
-        ToolBar toolBar2 = new ToolBar(sizeCombo, familyCombo, textColorPicker, backgroundColorPicker);
+                HBoxParagraphBackground);
 
+        toolBar1.setStyle("-fx-Background-color:white; -fx-border-width: 0 0 0.5 0; -fx-border-color: grey; ");
+        ToolBar toolBar2 = new ToolBar(sizeCombo, familyCombo, HBoxText, HBoxBackground);
+        toolBar2.setStyle("-fx-Background-color:white; -fx-border-width: 0 0 0.5 0; -fx-border-color: grey;");
         VirtualizedScrollPane<GenericStyledArea<ParStyle, Either<String, LinkedImage>, TextStyle>> vsPane = new VirtualizedScrollPane<>(area);
         VBox vbox = new VBox();
         VBox.setVgrow(vsPane, Priority.ALWAYS);
         vbox.getChildren().addAll(toolBar1, toolBar2, vsPane);
 
-        Scene scene = new Scene(vbox, 600, 400);
-        if(RichTextDemo.class.getResource("rich-text.css") != null) scene.getStylesheets().add(RichTextDemo.class.getResource("rich-text.css").toExternalForm());
+        Scene scene = new Scene(vbox, primaryStage.getWidth(), primaryStage.getHeight());
+        if(RichTextDemo.class.getResource("rich-text.css") != null) {
+            scene.getStylesheets().add(RichTextDemo.class.getResource("rich-text.css").toExternalForm());
+        } else {
+            System.out.println("rich-text.css not found!");
+        }
         primaryStage.setScene(scene);
         area.requestFocus();
-        primaryStage.setTitle("Rich Text Demo");
         primaryStage.show();
     }
 
