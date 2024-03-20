@@ -13,11 +13,31 @@
 
 ### Инструкция по установке приложения
 
+- скачайте javafx 17.0.10 -  https://gluonhq.com/products/javafx/, распакуйте zip
+
+
+- File - Project Structure - Libraries : New Project Library типа Java - в папках находите распакованный zip и выбирайте из него папку lib
+
+
+- Edit Configurations - Add new configuration - Application:
+
+Name = `Main`,
+module not specified = `19`,
+-cp <no module> = `Text-Editor-with-AI.main`, 
+Main Class = `org.hse.brina.Main`
+
+Modify options —> Add VM options: `--module-path "path\openjfx-17.0.10_windows-x64_bin-sdk\javafx-sdk-17.0.10\lib" --add-modules javafx.controls,javafx.fxml` , где в кавычках надо указать путь к папке lib у скачанной библиотеки javafx
+
+- запускаем `Server.java`, далее `Main.java` (Main, который настоили)
+
+при запуске в первый раз попросит ввести путь до базы данных - надо вставить абсолютный путь до файла `Text-Editor-with-AI/database/database.db`
+
 ### Текущий вид приложения
 
 | | |
 |---|---|
 | <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/cf516f22-2380-4fa0-a820-64e6cd8436b6" alt="sign-in" width="447" height="319"> | <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/9c08785a-ee25-4cfd-9d7a-912c0035ba38" alt="sign-up" width="447" height="319"> |
+| <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/cb459d13-a22a-4326-837a-5c286ef02602" alt="main-window" width="458" height="319"> | <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/b50afed6-8ece-4e93-888f-66563fa629ba" alt="editor" width="447" height="319"> |
 
 Палитра:
 
