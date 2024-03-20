@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.HBox?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx"
+           style="-fx-background-color: white;"
+           stylesheets="@../css/main-page-style.css"
+           fx:controller="org.hse.brina.utils.MainWindowController">
+    <HBox fx:id="imageHBox" styleClass="hbox"/>
+    <HBox alignment="TOP_RIGHT">
+        <VBox  alignment="TOP_CENTER" spacing="10" style="-fx-padding: 40;">
+            <HBox alignment="CENTER">
+                <ImageView fitWidth="65" fitHeight="60" preserveRatio="true">
+                    <Image url="@../assets/user-icon.png" />
+                </ImageView>
+            </HBox>
+            <HBox spacing="10" >
+                <Button fx:id="create_new" prefWidth="140" prefHeight="27" onAction="#openCreateButton" styleClass="file-button" text="New document" />
+                <ImageView fitWidth="30" fitHeight="30">
+                    <Image url="@../assets/new-document.png"/>
+                </ImageView>
+            </HBox>
+            <HBox spacing="10" >
+                <Button fx:id="collab" prefWidth="140" prefHeight="27" onAction="#openCollabButton" styleClass="file-button" text="Collaboration" />
+                <ImageView fitWidth="30" fitHeight="30">
+                    <Image url="@../assets/collaboration.png"/>
+                </ImageView>
+            </HBox>
+
+            <HBox spacing="10" >
+                <Button fx:id="my" prefWidth="140" prefHeight="27" onAction="#openMyProdButton" styleClass="file-button" text="My projects" />
+                <ImageView fitWidth="30" fitHeight="30">
+                    <Image url="@../assets/projects-list.png"/>
+                </ImageView>
+            </HBox>
+        </VBox>
+    </HBox>
+</StackPane>
+
+

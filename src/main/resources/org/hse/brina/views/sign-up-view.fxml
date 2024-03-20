@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane prefHeight="400" prefWidth="600" styleClass="white-box" stylesheets="@../css/sign-in-page-style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.hse.brina.signing.SignUpController">
+    <HBox alignment="CENTER" prefHeight="400" prefWidth="600" styleClass="white-box">
+        <padding>
+            <Insets top="50.0" />
+        </padding>
+        <VBox prefWidth="140" style="--fxbackground-color: white"/>
+        <VBox prefHeight="297.0" prefWidth="448.0" style="-fx-background-color: white;">
+            <padding>
+                <Insets bottom="20.0" left="16.0" right="16.0" top="20.0" />
+            </padding>
+            <Text styleClass="label" text="Create Account" />
+            <Text text="" />
+            <StackPane>
+                <TextField fx:id="loginField" prefHeight="50" promptText="Username" styleClass="login-field" />
+                <TextField fx:id="invalidLoginField" prefHeight="50" styleClass="login-warning-text" text="Enter your login" visible="false" />
+            </StackPane>
+            <Text text=" " />
+            <HBox>
+                <StackPane>
+                    <PasswordField fx:id="passwordField" prefHeight="50" prefWidth="400" promptText="Password" styleClass="password-field" />
+                    <TextField fx:id="openedPasswordField" prefHeight="50" promptText="Password" styleClass="password-field" visible="false" />
+                    <TextField fx:id="invalidPasswordField" prefHeight="50" styleClass="password-warning-text" text="Enter your password" visible="false" />
+                </StackPane>
+                <VBox alignment="CENTER_LEFT" prefHeight="50" prefWidth="80" styleClass="eye-field">
+                    <padding>
+                        <Insets left="10" right="10" top="5.0" />
+                    </padding>
+                    <Button fx:id="eyeButton" graphicTextGap="1.0" prefHeight="50" prefWidth="50" styleClass="eye-button">
+                        <graphic>
+                            <ImageView fx:id="eyeImage" fitHeight="27" fitWidth="27" preserveRatio="true">
+                                <Image url="@../assets/closed-eye.png"/>
+                            </ImageView>
+                        </graphic>
+                        <font>
+                            <Font size="1.0" />
+                        </font>
+                    </Button>
+                </VBox>
+            </HBox>
+            <Text text=" " />
+            <VBox alignment="CENTER">
+                <Button fx:id="signUpButton" alignment="CENTER" onAction="#signUpButtonClicked" styleClass="dark-button" text="Sign up" />
+                <HBox alignment="CENTER" spacing="5">
+                    <padding>
+                        <Insets top="5.0" />
+                    </padding>
+                    <Text styleClass="simple-text" text="Already have an account?" />
+                    <Button fx:id="backButton" onAction="#backButtonClicked" styleClass="light-button" text="Sign in" />
+                </HBox>
+            </VBox>
+        </VBox>
+        <VBox prefWidth="140" style="--fxbackground-color: white" />
+
+    </HBox>
+</Pane>

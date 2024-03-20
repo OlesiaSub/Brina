@@ -38,7 +38,7 @@ import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.StyledTextArea;
 import org.fxmisc.richtext.TextExt;
 import org.fxmisc.richtext.model.*;
-import org.hse.texteditorwithai.Main;
+import org.hse.brina.Main;
 import org.reactfx.SuspendableNo;
 import org.reactfx.util.Either;
 import org.reactfx.util.Tuple2;
@@ -86,7 +86,7 @@ public class RichTextDemo extends Application {
         Button backBtn = new Button();
         backBtn.getStyleClass().add("back");
         backBtn.setOnAction(e -> {
-            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/org/hse/texteditorwithai/views/main-window-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/org/hse/brina/views/main-window-view.fxml"));
             Parent pageLoader = null;
             try {
                 pageLoader = loader.load();

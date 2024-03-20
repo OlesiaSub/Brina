@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Text?>
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx" spacing="10"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.hse.brina.utils.MainWindowController"
+      style="-fx-background-color: white"
+      stylesheets="@../css/main-page-style.css">
+    <Text text="Open RichText (coming soon...)">
+    </Text>
+</VBox>

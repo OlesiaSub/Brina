@@ -1,0 +1,29 @@
+.file-button {
+    -fx-background-color: #101d2f;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-border-color: #3d6dac;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    margin: 10px;
+    -fx-font-family: "Baskerville Old Face";
+    -fx-font-weight: bold;
+}
+
+.login-field {
+    -fx-background-color: white;
+    -fx-text-fill: grey;
+    -fx-font-size: 16px;
+    -fx-border-color: grey;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+}
+
+.hbox{
+    -fx-background-image: url(/org/hse/brina/assets/brina-background.png);
+    -fx-background-size: contain;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: left center;
+}
