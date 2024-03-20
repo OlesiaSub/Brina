@@ -12,13 +12,15 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -26,18 +28,21 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.ParseContext;
+import org.apache.tika.parser.rtf.RTFParser;
+import org.apache.tika.sax.WriteOutContentHandler;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.StyledTextArea;
 import org.fxmisc.richtext.TextExt;
 import org.fxmisc.richtext.model.*;
-import org.hse.texteditorwithai.Config;
 import org.hse.texteditorwithai.Main;
-import org.hse.texteditorwithai.signing.SignInController;
-import org.hse.texteditorwithai.signing.SignUpController;
 import org.reactfx.SuspendableNo;
 import org.reactfx.util.Either;
 import org.reactfx.util.Tuple2;
+import org.xml.sax.SAXException;
 
 import java.io.*;
 import java.util.List;
@@ -54,134 +59,33 @@ public class RichTextDemo extends Application {
 
     // the saved/loaded files and their format are arbitrary and may change across versions
     public static final String RTFX_FILE_EXTENSION = ".rtf";
+    public final FoldableStyledArea area = new FoldableStyledArea();
+    public final SuspendableNo updatingToolbar = new SuspendableNo();
+    public Stage mainStage;
+
+    {
+        area.setWrapText(true);
+        area.setStyleCodecs(ParStyle.CODEC, Codec.styledSegmentCodec(Codec.eitherCodec(Codec.STRING_CODEC, LinkedImage.codec()), TextStyle.CODEC));
+        area.setParagraphGraphicFactory(new BulletFactory(area));  // and folded paragraph indicator
+        area.setContextMenu(new DefaultContextMenu());
+    }
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    public final FoldableStyledArea area = new FoldableStyledArea();
-
-    static class FoldableStyledArea extends GenericStyledArea<ParStyle, Either<String, LinkedImage>, TextStyle>
-    {
-        public final static TextOps<String, TextStyle> styledTextOps = SegmentOps.styledTextOps();
-        public final static LinkedImageOps<TextStyle> linkedImageOps = new LinkedImageOps<>();
-
-        public FoldableStyledArea()
-        {
-            super(
-                ParStyle.EMPTY,                                                 // default paragraph style
-                (paragraph, style) -> paragraph.setStyle(style.toCss()),        // paragraph style setter
-                TextStyle.EMPTY.updateFontSize(12).updateFontFamily("Serif").updateTextColor(Color.BLACK),  // default segment style
-                styledTextOps._or(linkedImageOps, (s1, s2) -> Optional.empty()),                            // segment operations
-                seg -> createNode(seg, (text, style) -> text.setStyle(style.toCss())));                     // Node creator and segment style setter
-        }
-
-        public static Node createNode( StyledSegment<Either<String, LinkedImage>, TextStyle> seg,
-                                        BiConsumer<? super TextExt, TextStyle> applyStyle ) {
-            return seg.getSegment().unify(
-                    text -> StyledTextArea.createStyledTextNode(text, seg.getStyle(), applyStyle),
-                    LinkedImage::createNode
-            );
-        }
-
-        public void foldParagraphs( int startPar, int endPar ) {
-            foldParagraphs( startPar, endPar, getAddFoldStyle() );
-        }
-
-        public void foldSelectedParagraphs() {
-            foldSelectedParagraphs( getAddFoldStyle() );
-        }
-
-        public void foldText( int start, int end ) {
-            fold( start, end, getAddFoldStyle() );
-        }
-
-        public void unfoldParagraphs( int startingFromPar ) {
-            unfoldParagraphs( startingFromPar, getFoldStyleCheck(), getRemoveFoldStyle() );
-        }
-
-        public void unfoldText( int startingFromPos ) {
-            startingFromPos = offsetToPosition( startingFromPos, Bias.Backward ).getMajor();
-            unfoldParagraphs( startingFromPos, getFoldStyleCheck(), getRemoveFoldStyle() );
-        }
-
-        protected UnaryOperator<ParStyle> getAddFoldStyle() {
-            return pstyle -> pstyle.updateFold( true );
-        }
-
-        protected UnaryOperator<ParStyle> getRemoveFoldStyle() {
-            return pstyle -> pstyle.updateFold( false );
-        }
-
-        protected Predicate<ParStyle> getFoldStyleCheck() {
-            return pstyle -> pstyle.isFolded();
-        }
-    }
-
-    public class DefaultContextMenu extends ContextMenu
-    {
-        public MenuItem fold, unfold;
-
-        public DefaultContextMenu()
-        {
-            fold = new MenuItem( "Fold selected text" );
-            fold.setOnAction( AE -> { hide(); fold(); } );
-
-            unfold = new MenuItem( "Unfold from cursor" );
-            unfold.setOnAction( AE -> { hide(); unfold(); } );
-
-            getItems().addAll( fold, unfold );
-        }
-
-        /**
-         * Folds multiple lines of selected text, only showing the first line and hiding the rest.
-         */
-        public void fold()
-        {
-            ((FoldableStyledArea) getOwnerNode()).foldSelectedParagraphs();
-        }
-
-        /**
-         * Unfold the CURRENT line/paragraph if it has a fold.
-         */
-        public void unfold()
-        {
-            FoldableStyledArea area = (FoldableStyledArea) getOwnerNode();
-            area.unfoldParagraphs( area.getCurrentParagraph() );
-        }
-    }
-
-    {
-        area.setWrapText(true);
-        area.setStyleCodecs(
-                ParStyle.CODEC,
-                Codec.styledSegmentCodec(Codec.eitherCodec(Codec.STRING_CODEC, LinkedImage.codec()), TextStyle.CODEC));
-        area.setParagraphGraphicFactory( new BulletFactory( area ) );  // and folded paragraph indicator
-        area.setContextMenu( new DefaultContextMenu() );
-    }
-
-    public Stage mainStage;
-
-    public final SuspendableNo updatingToolbar = new SuspendableNo();
-
     public void start(Stage primaryStage) {
         mainStage = primaryStage;
 
-        Button loadBtn = createButton("loadfile", this::loadDocument,
-                "Load document.\n\n" +
-                        "Note: the demo will load only previously-saved \"" + RTFX_FILE_EXTENSION + "\" files. " +
-                        "This file format is abitrary and may change across versions.");
-        Button saveBtn = createButton("savefile", this::saveDocument,
-                "Save document.\n\n" +
-                        "Note: the demo will save the area's content to a \"" + RTFX_FILE_EXTENSION + "\" file. " +
-                        "This file format is abitrary and may change across versions.");
+        Button loadBtn = createButton("loadfile", this::loadDocument, "Load document.\n\n" + "Note: the demo will load only previously-saved \"" + RTFX_FILE_EXTENSION + "\" files. " + "This file format is abitrary and may change across versions.");
+        Button saveBtn = createButton("savefile", this::saveDocument, "Save document.\n\n" + "Note: the demo will save the area's content to a \"" + RTFX_FILE_EXTENSION + "\" file. " + "This file format is abitrary and may change across versions.");
         CheckBox wrapToggle = new CheckBox("Wrap");
         wrapToggle.setSelected(true);
         area.wrapTextProperty().bind(wrapToggle.selectedProperty());
 
-        Button BackBtn = new Button();
-        BackBtn.getStyleClass().add("back");
-        BackBtn.setOnAction(e -> {
+        Button backBtn = new Button();
+        backBtn.getStyleClass().add("back");
+        backBtn.setOnAction(e -> {
             FXMLLoader loader = new FXMLLoader(Main.class.getResource("/org/hse/texteditorwithai/views/main-window-view.fxml"));
             Parent pageLoader = null;
             try {
@@ -193,9 +97,14 @@ public class RichTextDemo extends Application {
             primaryStage.setScene(scene);
             area.requestFocus();
         });
-        BackBtn.setPrefWidth(25);
-        BackBtn.setPrefHeight(25);
-        BackBtn.setTooltip(new Tooltip("Back"));
+        backBtn.setPrefWidth(25);
+        backBtn.setPrefHeight(25);
+        backBtn.setTooltip(new Tooltip("Back"));
+        Image image = new Image("/richtext/document-icon.png");
+        ImageView imageView = new ImageView(image);
+        imageView.setFitHeight(60);
+        imageView.setFitWidth(60);
+
         Button undoBtn = createButton("undo", area::undo, "Undo");
         Button redoBtn = createButton("redo", area::redo, "Redo");
         Button cutBtn = createButton("cut", area::cut, "Cut");
@@ -239,7 +148,7 @@ public class RichTextDemo extends Application {
         textColorPicker.setStyle(" -fx-color-label-visible: false;");
         Text textColorText = new Text("Text");
         textColorText.setStyle("-fx-text-alignment: left; -fx-alignment: center-left;-fx-font-size: 12px");
-        HBoxText.getChildren().addAll( textColorPicker, textColorText);
+        HBoxText.getChildren().addAll(textColorPicker, textColorText);
 
         HBox HBoxBackground = new HBox();
         HBoxBackground.setStyle("-fx-background-color: white; -fx-alignment: center; -fx-spacing: 5px;");
@@ -264,7 +173,9 @@ public class RichTextDemo extends Application {
         redoBtn.disableProperty().bind(area.redoAvailableProperty().map(x -> !x));
 
         BooleanBinding selectionEmpty = new BooleanBinding() {
-            { bind(area.selectionProperty()); }
+            {
+                bind(area.selectionProperty());
+            }
 
             @Override
             protected boolean computeValue() {
@@ -276,7 +187,7 @@ public class RichTextDemo extends Application {
         copyBtn.disableProperty().bind(selectionEmpty);
 
         area.beingUpdatedProperty().addListener((o, old, beingUpdated) -> {
-            if(!beingUpdated) {
+            if (!beingUpdated) {
                 boolean bold, italic, underline, strike;
                 Integer fontSize;
                 String fontFamily;
@@ -284,7 +195,7 @@ public class RichTextDemo extends Application {
                 Color backgroundColor;
 
                 IndexRange selection = area.getSelection();
-                if(selection.getLength() != 0) {
+                if (selection.getLength() != 0) {
                     StyleSpans<TextStyle> styles = area.getStyleSpans(selection);
                     bold = styles.styleStream().anyMatch(s -> s.bold.orElse(false));
                     italic = styles.styleStream().anyMatch(s -> s.italic.orElse(false));
@@ -316,54 +227,60 @@ public class RichTextDemo extends Application {
                 int endPar = area.offsetToPosition(selection.getEnd(), Backward).getMajor();
                 List<Paragraph<ParStyle, Either<String, LinkedImage>, TextStyle>> pars = area.getParagraphs().subList(startPar, endPar + 1);
 
-                @SuppressWarnings("unchecked")
-                Optional<TextAlignment>[] alignments = pars.stream().map(p -> p.getParagraphStyle().alignment).distinct().toArray(Optional[]::new);
+                @SuppressWarnings("unchecked") Optional<TextAlignment>[] alignments = pars.stream().map(p -> p.getParagraphStyle().alignment).distinct().toArray(Optional[]::new);
                 Optional<TextAlignment> alignment = alignments.length == 1 ? alignments[0] : Optional.empty();
 
-                @SuppressWarnings("unchecked")
-                Optional<Color>[] paragraphBackgrounds = pars.stream().map(p -> p.getParagraphStyle().backgroundColor).distinct().toArray(Optional[]::new);
+                @SuppressWarnings("unchecked") Optional<Color>[] paragraphBackgrounds = pars.stream().map(p -> p.getParagraphStyle().backgroundColor).distinct().toArray(Optional[]::new);
                 Optional<Color> paragraphBackground = paragraphBackgrounds.length == 1 ? paragraphBackgrounds[0] : Optional.empty();
 
                 updatingToolbar.suspendWhile(() -> {
-                    if(bold) {
-                        if(!boldBtn.getStyleClass().contains("pressed")) {
+                    if (bold) {
+                        if (!boldBtn.getStyleClass().contains("pressed")) {
                             boldBtn.getStyleClass().add("pressed");
                         }
                     } else {
                         boldBtn.getStyleClass().remove("pressed");
                     }
 
-                    if(italic) {
-                        if(!italicBtn.getStyleClass().contains("pressed")) {
+                    if (italic) {
+                        if (!italicBtn.getStyleClass().contains("pressed")) {
                             italicBtn.getStyleClass().add("pressed");
                         }
                     } else {
                         italicBtn.getStyleClass().remove("pressed");
                     }
 
-                    if(underline) {
-                        if(!underlineBtn.getStyleClass().contains("pressed")) {
+                    if (underline) {
+                        if (!underlineBtn.getStyleClass().contains("pressed")) {
                             underlineBtn.getStyleClass().add("pressed");
                         }
                     } else {
                         underlineBtn.getStyleClass().remove("pressed");
                     }
 
-                    if(strike) {
-                        if(!strikeBtn.getStyleClass().contains("pressed")) {
+                    if (strike) {
+                        if (!strikeBtn.getStyleClass().contains("pressed")) {
                             strikeBtn.getStyleClass().add("pressed");
                         }
                     } else {
                         strikeBtn.getStyleClass().remove("pressed");
                     }
 
-                    if(alignment.isPresent()) {
+                    if (alignment.isPresent()) {
                         TextAlignment al = alignment.get();
-                        switch(al) {
-                            case LEFT: alignmentGrp.selectToggle(alignLeftBtn); break;
-                            case CENTER: alignmentGrp.selectToggle(alignCenterBtn); break;
-                            case RIGHT: alignmentGrp.selectToggle(alignRightBtn); break;
-                            case JUSTIFY: alignmentGrp.selectToggle(alignJustifyBtn); break;
+                        switch (al) {
+                            case LEFT:
+                                alignmentGrp.selectToggle(alignLeftBtn);
+                                break;
+                            case CENTER:
+                                alignmentGrp.selectToggle(alignCenterBtn);
+                                break;
+                            case RIGHT:
+                                alignmentGrp.selectToggle(alignRightBtn);
+                                break;
+                            case JUSTIFY:
+                                alignmentGrp.selectToggle(alignJustifyBtn);
+                                break;
                         }
                     } else {
                         alignmentGrp.selectToggle(null);
@@ -371,19 +288,19 @@ public class RichTextDemo extends Application {
 
                     paragraphBackgroundPicker.setValue(paragraphBackground.orElse(null));
 
-                    if(fontSize != -1) {
+                    if (fontSize != -1) {
                         sizeCombo.getSelectionModel().select(fontSize);
                     } else {
                         sizeCombo.getSelectionModel().clearSelection();
                     }
 
-                    if(fontFamily != null) {
+                    if (fontFamily != null) {
                         familyCombo.getSelectionModel().select(fontFamily);
                     } else {
                         familyCombo.getSelectionModel().clearSelection();
                     }
 
-                    if(textColor != null) {
+                    if (textColor != null) {
                         textColorPicker.setValue(textColor);
                     }
 
@@ -392,36 +309,58 @@ public class RichTextDemo extends Application {
             }
         });
 
-        ToolBar toolBar1 = new ToolBar(BackBtn,
-                loadBtn, saveBtn,  new Separator(Orientation.VERTICAL),
-                undoBtn, redoBtn, new Separator(Orientation.VERTICAL),
-                cutBtn, copyBtn, pasteBtn, new Separator(Orientation.VERTICAL),
-                boldBtn, italicBtn, underlineBtn, strikeBtn, new Separator(Orientation.VERTICAL),
-                alignLeftBtn, alignCenterBtn, alignRightBtn, alignJustifyBtn, new Separator(Orientation.VERTICAL),
-                increaseIndentBtn, decreaseIndentBtn, new Separator(Orientation.VERTICAL),
-                insertImageBtn, new Separator(Orientation.VERTICAL),
-                HBoxParagraphBackground);
+        TextField documentName = new TextField();
+        documentName.setText("New Document");
+        documentName.setMaxWidth(200);
+        documentName.setMaxHeight(50);
+        documentName.setPrefWidth(100);
+        documentName.setAlignment(Pos.BASELINE_LEFT);
+        ToolBar toolBar1 = new ToolBar(backBtn, loadBtn, saveBtn, new Separator(Orientation.VERTICAL), undoBtn, redoBtn, new Separator(Orientation.VERTICAL), cutBtn, copyBtn, pasteBtn, new Separator(Orientation.VERTICAL), boldBtn, italicBtn, underlineBtn, strikeBtn, new Separator(Orientation.VERTICAL), alignLeftBtn, alignCenterBtn, alignRightBtn, alignJustifyBtn, new Separator(Orientation.VERTICAL), increaseIndentBtn, decreaseIndentBtn, new Separator(Orientation.VERTICAL), insertImageBtn, new Separator(Orientation.VERTICAL), HBoxParagraphBackground);
 
-        toolBar1.setStyle("-fx-Background-color:white; -fx-border-width: 0 0 0.5 0; -fx-border-color: grey; ");
+        String toolBarStyle = "-fx-background-color:white; -fx-padding: 0px;";
+        toolBar1.setStyle(toolBarStyle);
+        toolBar1.setPrefHeight(30);
+        toolBar1.setMaxHeight(30);
+
+        VBox upperToolbarVBox = new VBox();
+        upperToolbarVBox.setStyle("-fx-background-color: white; -fx-alignment: TOP_LEFT; -fx-spacing: 1px;");
+        upperToolbarVBox.setAlignment(Pos.TOP_LEFT);
+        HBox.setHgrow(upperToolbarVBox, Priority.ALWAYS);
+        VBox.setVgrow(upperToolbarVBox, Priority.ALWAYS);
+        upperToolbarVBox.getChildren().addAll(documentName, toolBar1);
+
+        HBox upperToolbarHBox = new HBox();
+        upperToolbarHBox.setStyle("-fx-background-color: white; -fx-alignment: TOP_LEFT; -fx-spacing: 0px;");
+        upperToolbarHBox.setAlignment(Pos.TOP_LEFT);
+        upperToolbarHBox.setPadding(new Insets(3));
+        HBox.setHgrow(upperToolbarHBox, Priority.ALWAYS);
+        upperToolbarHBox.getChildren().addAll(imageView, upperToolbarVBox);
+
         ToolBar toolBar2 = new ToolBar(sizeCombo, familyCombo, HBoxText, HBoxBackground);
-        toolBar2.setStyle("-fx-Background-color:white; -fx-border-width: 0 0 0.5 0; -fx-border-color: grey;");
-        VirtualizedScrollPane<GenericStyledArea<ParStyle, Either<String, LinkedImage>, TextStyle>> vsPane = new VirtualizedScrollPane<>(area);
-        VBox vbox = new VBox();
-        VBox.setVgrow(vsPane, Priority.ALWAYS);
-        vbox.getChildren().addAll(toolBar1, toolBar2, vsPane);
+        toolBar2.setStyle(toolBarStyle);
+        toolBar2.setPrefHeight(30);
+        toolBar2.setMaxHeight(30);
 
-        Scene scene = new Scene(vbox, primaryStage.getWidth(), primaryStage.getHeight());
-        if(RichTextDemo.class.getResource("rich-text.css") != null) {
+        VirtualizedScrollPane<GenericStyledArea<ParStyle, Either<String, LinkedImage>, TextStyle>> vsPane = new VirtualizedScrollPane<>(area);
+        VBox windowVBox = new VBox();
+        windowVBox.setStyle("-fx-background-color: white; -fx-alignment: TOP_LEFT; -fx-spacing: 1px;");
+        windowVBox.setAlignment(Pos.TOP_LEFT);
+        VBox.setVgrow(vsPane, Priority.ALWAYS);
+
+        windowVBox.getChildren().addAll(upperToolbarHBox, new Separator(Orientation.HORIZONTAL), toolBar2, new Separator(Orientation.HORIZONTAL), vsPane);
+
+        Scene scene = new Scene(windowVBox, primaryStage.getWidth(), primaryStage.getHeight());
+
+        if (RichTextDemo.class.getResource("rich-text.css") != null) {
             scene.getStylesheets().add(RichTextDemo.class.getResource("rich-text.css").toExternalForm());
         } else {
             System.out.println("rich-text.css not found!");
         }
+
         primaryStage.setScene(scene);
         area.requestFocus();
         primaryStage.show();
     }
-
-
 
     public Button createButton(String styleClass, Runnable action, String toolTip) {
         Button button = new Button();
@@ -491,8 +430,7 @@ public class RichTextDemo extends Application {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load document");
         fileChooser.setInitialDirectory(new File(initialDir));
-        fileChooser.setSelectedExtensionFilter(
-                new FileChooser.ExtensionFilter("Arbitrary RTFX file", "*" + RTFX_FILE_EXTENSION));
+        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("Arbitrary RTFX file", "*" + RTFX_FILE_EXTENSION));
         File selectedFile = fileChooser.showOpenDialog(mainStage);
         if (selectedFile != null) {
             area.clear();
@@ -501,10 +439,9 @@ public class RichTextDemo extends Application {
     }
 
     public void load(File file) {
-        if(area.getStyleCodecs().isPresent()) {
+        if (area.getStyleCodecs().isPresent()) {
             Tuple2<Codec<ParStyle>, Codec<StyledSegment<Either<String, LinkedImage>, TextStyle>>> codecs = area.getStyleCodecs().get();
-            Codec<StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle>>
-                codec = ReadOnlyStyledDocument.codec(codecs._1, codecs._2, area.getSegOps());
+            Codec<StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle>> codec = ReadOnlyStyledDocument.codec(codecs._1, codecs._2, area.getSegOps());
 
             try {
                 FileInputStream fis = new FileInputStream(file);
@@ -512,16 +449,14 @@ public class RichTextDemo extends Application {
                 StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> doc = codec.decode(dis);
                 fis.close();
 
-                if(doc != null) {
+                if (doc != null) {
                     area.replaceSelection(doc);
-                    return;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
-
 
     public void saveDocument() {
         String initialDir = System.getProperty("user.dir");
@@ -535,19 +470,18 @@ public class RichTextDemo extends Application {
         }
     }
 
-
     public void save(File file) {
         StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> doc = area.getDocument();
 
         // Use the Codec to save the document in a binary format
         area.getStyleCodecs().ifPresent(codecs -> {
-            Codec<StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle>> codec =
-                    ReadOnlyStyledDocument.codec(codecs._1, codecs._2, area.getSegOps());
+            Codec<StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle>> codec = ReadOnlyStyledDocument.codec(codecs._1, codecs._2, area.getSegOps());
             try {
                 FileOutputStream fos = new FileOutputStream(file);
                 DataOutputStream dos = new DataOutputStream(fos);
                 codec.encode(dos, doc);
                 fos.close();
+//                covertRTFtoTXT(file);
 //                RTFToTXTConverter.convertRtfToTxt(file.getAbsolutePath(), "C:\\Users\\HUAWEI\\Downloads");
             } catch (IOException fnfe) {
                 fnfe.printStackTrace();
@@ -555,6 +489,41 @@ public class RichTextDemo extends Application {
         });
     }
 
+    public void covertRTFtoTXT(File rtfFilePath) {
+//        String rtfFilePath = "sometext.rtf";
+        String txtFilePath = "sometexttxt.txt";
+
+        try {
+            // Создание парсера RTF
+            RTFParser rtfParser = new RTFParser();
+
+            // Поток ввода для чтения RTF-файла
+            InputStream inputStream = new FileInputStream(rtfFilePath);
+
+            // Поток вывода для записи текста в новый TXT-файл
+            OutputStream outputStream = new FileOutputStream(txtFilePath);
+
+            // Обработчик, который записывает текст в выходной поток
+            WriteOutContentHandler handler = new WriteOutContentHandler(outputStream);
+
+            // Преобразование RTF в текст с использованием Apache Tika
+            rtfParser.parse(inputStream, handler, new Metadata(), new ParseContext());
+
+            // Закрытие потоков
+            inputStream.close();
+            outputStream.close();
+
+            System.out.println("Файл успешно сохранен в формате TXT.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TikaException e) {
+//            throw new RuntimeException(e);
+            e.printStackTrace();
+        } catch (SAXException e) {
+//            throw new RuntimeException(e);
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Action listener which inserts a new image at the current caret position.
@@ -567,25 +536,23 @@ public class RichTextDemo extends Application {
         File selectedFile = fileChooser.showOpenDialog(mainStage);
         if (selectedFile != null) {
             String imagePath = selectedFile.getAbsolutePath();
-            imagePath = imagePath.replace('\\',  '/');
-            ReadOnlyStyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> ros =
-                    ReadOnlyStyledDocument.fromSegment(Either.right(new RealLinkedImage(imagePath)),
-                                                       ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps());
+            imagePath = imagePath.replace('\\', '/');
+            ReadOnlyStyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> ros = ReadOnlyStyledDocument.fromSegment(Either.right(new RealLinkedImage(imagePath)), ParStyle.EMPTY, TextStyle.EMPTY, area.getSegOps());
             area.replaceSelection(ros);
         }
     }
 
     public void increaseIndent() {
-        updateParagraphStyleInSelection( ps -> ps.increaseIndent() );
+        updateParagraphStyleInSelection(ps -> ps.increaseIndent());
     }
 
     public void decreaseIndent() {
-        updateParagraphStyleInSelection( ps -> ps.decreaseIndent() );
+        updateParagraphStyleInSelection(ps -> ps.decreaseIndent());
     }
 
     public void updateStyleInSelection(Function<StyleSpans<TextStyle>, TextStyle> mixinGetter) {
         IndexRange selection = area.getSelection();
-        if(selection.getLength() != 0) {
+        if (selection.getLength() != 0) {
             StyleSpans<TextStyle> styles = area.getStyleSpans(selection);
             TextStyle mixin = mixinGetter.apply(styles);
             StyleSpans<TextStyle> newStyles = styles.mapStyles(style -> style.updateWith(mixin));
@@ -606,7 +573,7 @@ public class RichTextDemo extends Application {
         IndexRange selection = area.getSelection();
         int startPar = area.offsetToPosition(selection.getStart(), Forward).getMajor();
         int endPar = area.offsetToPosition(selection.getEnd(), Backward).getMajor();
-        for(int i = startPar; i <= endPar; ++i) {
+        for (int i = startPar; i <= endPar; ++i) {
             Paragraph<ParStyle, Either<String, LinkedImage>, TextStyle> paragraph = area.getParagraph(i);
             area.setParagraphStyle(i, updater.apply(paragraph.getParagraphStyle()));
         }
@@ -617,32 +584,117 @@ public class RichTextDemo extends Application {
     }
 
     public void updateFontSize(Integer size) {
-        if(!updatingToolbar.get()) {
+        if (!updatingToolbar.get()) {
             updateStyleInSelection(TextStyle.fontSize(size));
         }
     }
 
     public void updateFontFamily(String family) {
-        if(!updatingToolbar.get()) {
+        if (!updatingToolbar.get()) {
             updateStyleInSelection(TextStyle.fontFamily(family));
         }
     }
 
     public void updateTextColor(Color color) {
-        if(!updatingToolbar.get()) {
+        if (!updatingToolbar.get()) {
             updateStyleInSelection(TextStyle.textColor(color));
         }
     }
 
     public void updateBackgroundColor(Color color) {
-        if(!updatingToolbar.get()) {
+        if (!updatingToolbar.get()) {
             updateStyleInSelection(TextStyle.backgroundColor(color));
         }
     }
 
     public void updateParagraphBackground(Color color) {
-        if(!updatingToolbar.get()) {
+        if (!updatingToolbar.get()) {
             updateParagraphStyleInSelection(ParStyle.backgroundColor(color));
+        }
+    }
+
+    static class FoldableStyledArea extends GenericStyledArea<ParStyle, Either<String, LinkedImage>, TextStyle> {
+        public final static TextOps<String, TextStyle> styledTextOps = SegmentOps.styledTextOps();
+        public final static LinkedImageOps<TextStyle> linkedImageOps = new LinkedImageOps<>();
+
+        public FoldableStyledArea() {
+            super(ParStyle.EMPTY,                                                 // default paragraph style
+                    (paragraph, style) -> paragraph.setStyle(style.toCss()),        // paragraph style setter
+                    TextStyle.EMPTY.updateFontSize(12).updateFontFamily("Serif").updateTextColor(Color.BLACK),  // default segment style
+                    styledTextOps._or(linkedImageOps, (s1, s2) -> Optional.empty()),                            // segment operations
+                    seg -> createNode(seg, (text, style) -> text.setStyle(style.toCss())));                     // Node creator and segment style setter
+        }
+
+        public static Node createNode(StyledSegment<Either<String, LinkedImage>, TextStyle> seg, BiConsumer<? super TextExt, TextStyle> applyStyle) {
+            return seg.getSegment().unify(text -> StyledTextArea.createStyledTextNode(text, seg.getStyle(), applyStyle), LinkedImage::createNode);
+        }
+
+        public void foldParagraphs(int startPar, int endPar) {
+            foldParagraphs(startPar, endPar, getAddFoldStyle());
+        }
+
+        public void foldSelectedParagraphs() {
+            foldSelectedParagraphs(getAddFoldStyle());
+        }
+
+        public void foldText(int start, int end) {
+            fold(start, end, getAddFoldStyle());
+        }
+
+        public void unfoldParagraphs(int startingFromPar) {
+            unfoldParagraphs(startingFromPar, getFoldStyleCheck(), getRemoveFoldStyle());
+        }
+
+        public void unfoldText(int startingFromPos) {
+            startingFromPos = offsetToPosition(startingFromPos, Bias.Backward).getMajor();
+            unfoldParagraphs(startingFromPos, getFoldStyleCheck(), getRemoveFoldStyle());
+        }
+
+        protected UnaryOperator<ParStyle> getAddFoldStyle() {
+            return pstyle -> pstyle.updateFold(true);
+        }
+
+        protected UnaryOperator<ParStyle> getRemoveFoldStyle() {
+            return pstyle -> pstyle.updateFold(false);
+        }
+
+        protected Predicate<ParStyle> getFoldStyleCheck() {
+            return pstyle -> pstyle.isFolded();
+        }
+    }
+
+    public class DefaultContextMenu extends ContextMenu {
+        public MenuItem fold, unfold;
+
+        public DefaultContextMenu() {
+            fold = new MenuItem("Fold selected text");
+            fold.setOnAction(AE -> {
+                hide();
+                fold();
+            });
+
+            unfold = new MenuItem("Unfold from cursor");
+            unfold.setOnAction(AE -> {
+                hide();
+                unfold();
+            });
+
+            getItems().addAll(fold, unfold);
+        }
+
+        /**
+         * Folds multiple lines of selected text, only showing the first line and hiding the rest.
+         */
+        public void fold() {
+            ((FoldableStyledArea) getOwnerNode()).foldSelectedParagraphs();
+        }
+
+        /**
+         * Unfold the CURRENT line/paragraph if it has a fold.
+         */
+        public void unfold() {
+            FoldableStyledArea area = (FoldableStyledArea) getOwnerNode();
+            area.unfoldParagraphs(area.getCurrentParagraph());
         }
     }
 }

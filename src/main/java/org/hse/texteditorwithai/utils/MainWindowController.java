@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.hse.texteditorwithai.Config;
 import org.hse.texteditorwithai.Main;
 import richtext.RichTextDemo;
 
@@ -31,10 +30,11 @@ public class MainWindowController {
 
     private void openButton(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
-        Parent logInLoader = loader.load();
-        Scene scene = new Scene(logInLoader, Config.getDefaultWidth(), Config.getDefaultHeight());
+        Parent sceneLoader = loader.load();
+        Scene scene = new Scene(sceneLoader, stage.getWidth(), stage.getHeight());
         stage.setScene(scene);
     }
+
     @FXML
     private void openCreateButton() {
         Stage stage = (Stage) create_new.getScene().getWindow();
@@ -72,4 +72,5 @@ public class MainWindowController {
             System.err.println("Scene configuration file not found. " + e.getMessage());
         }
     }
+
 }
