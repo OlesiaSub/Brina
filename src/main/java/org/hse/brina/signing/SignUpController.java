@@ -1,9 +1,11 @@
 package org.hse.brina.signing;
 
-import org.hse.brina.client.Client;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hse.brina.client.Client;
 
 import java.io.IOException;
 
@@ -13,6 +15,7 @@ import java.io.IOException;
  * осуществляет переход на главное окно приложения при успешной регистрации.
  */
 public class SignUpController extends SignInController {
+    private static final Logger logger = LogManager.getLogger();
     @FXML
     private Button backButton;
 
@@ -27,7 +30,7 @@ public class SignUpController extends SignInController {
         try {
             loadScene(stage, "/org/hse/brina/views/sign-in-view.fxml");
         } catch (IOException e) {
-            System.out.println("Scene configuration file not found. " + e.getMessage());
+            logger.error("Scene configuration file not found. " + e.getMessage());
         }
     }
 
@@ -48,8 +51,8 @@ public class SignUpController extends SignInController {
                 } else if (response.equals("User is registered")) {
                     loadScene(stage, "/org/hse/brina/views/successful-sign-up-view.fxml");
                 }
-            } catch (IOException e) {
-                System.err.println("Scene configuration file not found. " + e.getMessage());
+            } catch (Exception e) {
+                logger.error("Scene configuration file not found. " + e.getMessage());
             }
             stage.setResizable(true);
         }

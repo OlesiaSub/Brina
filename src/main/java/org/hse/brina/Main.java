@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +19,9 @@ import java.io.InputStream;
  */
 public class Main extends Application {
 
+    private static final Logger logger = LogManager.getLogger();
+
+
     public static void main(String[] args) {
         launch();
     }
@@ -27,15 +32,12 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/first-view.fxml"));
         Parent root = loader.load();
         stage.setTitle("Brina");
-
-        InputStream iconStream = getClass().getResourceAsStream("assets/small-icon.png");
-        Image icon = null;
-        if (iconStream != null) {
-            icon = new Image(iconStream);
-        } else {
-            System.err.println("Icon is not Found!");
+        try (InputStream iconStream1 = getClass().getResourceAsStream("assets/small-icon.png")) {
+            Image icon = new Image(iconStream1);
+            stage.getIcons().add(icon);
+        } catch (Exception e) {
+            logger.error("Error loading icon: " + e.getMessage());
         }
-        stage.getIcons().add(icon);
         Scene scene = new Scene(root, Config.getDefaultWidth(), Config.getDefaultHeight());
         stage.setScene(scene);
         stage.setResizable(false);

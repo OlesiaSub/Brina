@@ -1,5 +1,7 @@
 package org.hse.brina.server;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hse.brina.Config;
 
 import java.io.BufferedReader;
@@ -11,6 +13,7 @@ import java.net.Socket;
 import java.sql.*;
 
 public class Server {
+    private static final Logger logger = LogManager.getLogger();
     private ServerSocket serverSocket;
     private Socket clientSocket;
     private BufferedReader in;
@@ -20,12 +23,12 @@ public class Server {
     public Server(int port) {
         try {
             serverSocket = new ServerSocket(port);
-            System.out.println("Server started. Waiting for clients...");
-            String url = "jdbc:sqlite:" + Config.getPathToJDBC();
+            logger.info("Server started. Waiting for clients...");
+            String url = "jdbc:sqlite:" + Config.getPathToDB();
             connection = DriverManager.getConnection(url);
-            System.out.println("Connection to SQLite has been established.");
+            logger.info("Connection to SQLite has been established.");
         } catch (IOException | SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -39,13 +42,13 @@ public class Server {
         try {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
-                System.out.println("Client connected: " + clientSocket.getInetAddress().getHostName());
+                logger.info("Client connected: " + clientSocket.getInetAddress().getHostName());
                 ClientHandler clientHandler = new ClientHandler(clientSocket);
                 Thread clientThread = new Thread(clientHandler);
                 clientThread.start();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -116,14 +119,14 @@ public class Server {
                     }
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             } finally {
                 try {
                     in.close();
                     out.close();
                     clientSocket.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage());
                 }
             }
         }
@@ -134,9 +137,9 @@ public class Server {
                 statement.setString(1, username);
                 statement.setString(2, password);
                 statement.executeUpdate();
-                System.out.println("User added into db");
+                logger.info("User added into db");
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
 
@@ -148,7 +151,7 @@ public class Server {
                 ResultSet resultSet = statement.executeQuery();
                 return resultSet.next();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
                 return false;
             }
         }
@@ -162,7 +165,7 @@ public class Server {
                     return false;
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
             return true;
         }
@@ -173,9 +176,9 @@ public class Server {
                 out.close();
                 clientSocket.close();
                 serverSocket.close();
-                System.out.println("Server stopped");
+                logger.info("Server stopped");
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
 

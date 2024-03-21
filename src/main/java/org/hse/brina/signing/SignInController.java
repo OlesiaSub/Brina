@@ -5,12 +5,17 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hse.brina.Config;
 import org.hse.brina.Main;
-
 import org.hse.brina.client.Client;
 
 import java.io.IOException;
@@ -24,6 +29,7 @@ import java.util.Objects;
  */
 public class SignInController {
 
+    private static final Logger logger = LogManager.getLogger();
     @FXML
     protected Label welcomeText;
     @FXML
@@ -44,24 +50,26 @@ public class SignInController {
     private TextField openedPasswordField;
     @FXML
     private ImageView eyeImage;
-
     private boolean passwordVisible = false;
-
 
     @FXML
     protected void initialize() {
 
-        Image eyeOpen = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/hse/brina/assets/open-eye.png")));
-        Image eyeClosed = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/hse/brina/assets/closed-eye.png")));
+        try {
+            Image eyeOpen = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/hse/brina/assets/open-eye.png")));
+            Image eyeClosed = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/hse/brina/assets/closed-eye.png")));
 
-        eyeButton.setOnAction(event -> {
-            if (!passwordVisible) {
-                changePasswordVisibility(eyeOpen, passwordField, openedPasswordField);
-            } else {
-                changePasswordVisibility(eyeClosed, openedPasswordField, passwordField);
+            eyeButton.setOnAction(event -> {
+                if (!passwordVisible) {
+                    changePasswordVisibility(eyeOpen, passwordField, openedPasswordField);
+                } else {
+                    changePasswordVisibility(eyeClosed, openedPasswordField, passwordField);
 
-            }
-        });
+                }
+            });
+        } catch (Exception e) {
+            logger.error("Error loading assets for password field: " + e.getMessage());
+        }
 
         invalidLoginField.setOnMouseClicked(event -> hideWarningAboutEmptyField(invalidLoginField));
 
@@ -106,7 +114,7 @@ public class SignInController {
 
         Client client = new Client("localhost", 8080);
         client.sendMessage("signInUser " + username + " " + password);
-        String response =  client.receiveMessage();
+        String response = client.receiveMessage();
         if (response.equals("User with this name not found")) {
             invalidLoginField.setText("User with this name doesn't exist");
             invalidLoginField.setVisible(true);

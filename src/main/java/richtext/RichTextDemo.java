@@ -28,11 +28,8 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.apache.tika.exception.TikaException;
-import org.apache.tika.metadata.Metadata;
-import org.apache.tika.parser.ParseContext;
-import org.apache.tika.parser.rtf.RTFParser;
-import org.apache.tika.sax.WriteOutContentHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.StyledTextArea;
@@ -42,7 +39,6 @@ import org.hse.brina.Main;
 import org.reactfx.SuspendableNo;
 import org.reactfx.util.Either;
 import org.reactfx.util.Tuple2;
-import org.xml.sax.SAXException;
 
 import java.io.*;
 import java.util.List;
@@ -58,7 +54,8 @@ import static org.fxmisc.richtext.model.TwoDimensional.Bias.Forward;
 public class RichTextDemo extends Application {
 
     // the saved/loaded files and their format are arbitrary and may change across versions
-    public static final String RTFX_FILE_EXTENSION = ".rtf";
+    public static final String RTF_FILE_EXTENSION = ".rtf";
+    private static final Logger logger = LogManager.getLogger();
     public final FoldableStyledArea area = new FoldableStyledArea();
     public final SuspendableNo updatingToolbar = new SuspendableNo();
     public Stage mainStage;
@@ -77,8 +74,8 @@ public class RichTextDemo extends Application {
     public void start(Stage primaryStage) {
         mainStage = primaryStage;
 
-        Button loadBtn = createButton("loadfile", this::loadDocument, "Load document.\n\n" + "Note: the demo will load only previously-saved \"" + RTFX_FILE_EXTENSION + "\" files. " + "This file format is abitrary and may change across versions.");
-        Button saveBtn = createButton("savefile", this::saveDocument, "Save document.\n\n" + "Note: the demo will save the area's content to a \"" + RTFX_FILE_EXTENSION + "\" file. " + "This file format is abitrary and may change across versions.");
+        Button loadBtn = createButton("loadfile", this::loadDocument, "Load document.\n\n" + "Note: the demo will load only previously-saved \"" + RTF_FILE_EXTENSION + "\" files. " + "This file format is abitrary and may change across versions.");
+        Button saveBtn = createButton("savefile", this::saveDocument, "Save document.\n\n" + "Note: the demo will save the area's content to a \"" + RTF_FILE_EXTENSION + "\" file. " + "This file format is abitrary and may change across versions.");
         CheckBox wrapToggle = new CheckBox("Wrap");
         wrapToggle.setSelected(true);
         area.wrapTextProperty().bind(wrapToggle.selectedProperty());
@@ -430,7 +427,7 @@ public class RichTextDemo extends Application {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load document");
         fileChooser.setInitialDirectory(new File(initialDir));
-        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("Arbitrary RTFX file", "*" + RTFX_FILE_EXTENSION));
+        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("Arbitrary RTF file", "*" + RTF_FILE_EXTENSION));
         File selectedFile = fileChooser.showOpenDialog(mainStage);
         if (selectedFile != null) {
             area.clear();
@@ -453,7 +450,7 @@ public class RichTextDemo extends Application {
                     area.replaceSelection(doc);
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
     }
@@ -463,7 +460,7 @@ public class RichTextDemo extends Application {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save document");
         fileChooser.setInitialDirectory(new File(initialDir));
-        fileChooser.setInitialFileName("example rtfx file" + RTFX_FILE_EXTENSION);
+        fileChooser.setInitialFileName("example rtf file" + RTF_FILE_EXTENSION);
         File selectedFile = fileChooser.showSaveDialog(mainStage);
         if (selectedFile != null) {
             save(selectedFile);
@@ -481,48 +478,10 @@ public class RichTextDemo extends Application {
                 DataOutputStream dos = new DataOutputStream(fos);
                 codec.encode(dos, doc);
                 fos.close();
-//                covertRTFtoTXT(file);
-//                RTFToTXTConverter.convertRtfToTxt(file.getAbsolutePath(), "C:\\Users\\HUAWEI\\Downloads");
             } catch (IOException fnfe) {
-                fnfe.printStackTrace();
+                logger.error(fnfe.getMessage());
             }
         });
-    }
-
-    public void covertRTFtoTXT(File rtfFilePath) {
-//        String rtfFilePath = "sometext.rtf";
-        String txtFilePath = "sometexttxt.txt";
-
-        try {
-            // Создание парсера RTF
-            RTFParser rtfParser = new RTFParser();
-
-            // Поток ввода для чтения RTF-файла
-            InputStream inputStream = new FileInputStream(rtfFilePath);
-
-            // Поток вывода для записи текста в новый TXT-файл
-            OutputStream outputStream = new FileOutputStream(txtFilePath);
-
-            // Обработчик, который записывает текст в выходной поток
-            WriteOutContentHandler handler = new WriteOutContentHandler(outputStream);
-
-            // Преобразование RTF в текст с использованием Apache Tika
-            rtfParser.parse(inputStream, handler, new Metadata(), new ParseContext());
-
-            // Закрытие потоков
-            inputStream.close();
-            outputStream.close();
-
-            System.out.println("Файл успешно сохранен в формате TXT.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TikaException e) {
-//            throw new RuntimeException(e);
-            e.printStackTrace();
-        } catch (SAXException e) {
-//            throw new RuntimeException(e);
-            e.printStackTrace();
-        }
     }
 
     /**

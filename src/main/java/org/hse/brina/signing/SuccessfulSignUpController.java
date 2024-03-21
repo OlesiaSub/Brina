@@ -8,6 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hse.brina.Main;
 
 import java.io.IOException;
@@ -18,6 +20,7 @@ import java.io.IOException;
  */
 public class SuccessfulSignUpController {
 
+    private static final Logger logger = LogManager.getLogger();
     @FXML
     private Label label;
 
@@ -41,7 +44,7 @@ public class SuccessfulSignUpController {
         try {
             loadScene(stage, "/org/hse/brina/views/main-window-view.fxml");
         } catch (IOException e) {
-            System.err.println("Scene configuration file not found. " + e.getMessage());
+            logger.error("Scene configuration file not found. " + e.getMessage());
         }
         stage.setResizable(true);
     }
