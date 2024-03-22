@@ -10,8 +10,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hse.brina.Main;
-import richtext.RichTextDemo;
+import org.hse.brina.richtext.RichTextDemo;
 
 import java.io.IOException;
 import java.net.URL;
@@ -34,12 +36,19 @@ public class MainWindowController implements Initializable {
     private Button create_new;
     @FXML
     private Button my;
+    private static final Logger logger = LogManager.getLogger();
+
 
     private void openButton(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
-        Parent sceneLoader = loader.load();
-        Scene scene = new Scene(sceneLoader, stage.getWidth(), stage.getHeight());
-        stage.setScene(scene);
+        try {
+            Parent sceneLoader = loader.load();
+            Scene scene = new Scene(sceneLoader, stage.getWidth(), stage.getHeight());
+            stage.setScene(scene);
+        } catch (IOException e){
+            logger.error("Error loading FXML: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -54,9 +63,9 @@ public class MainWindowController implements Initializable {
     private void openCollabButton() {
         Stage stage = (Stage) collab.getScene().getWindow();
         try {
-            openButton(stage, "/org/hse/brina/views/collab-view.fxml");
+            openButton(stage, "/views/collab-view.fxml");
         } catch (IOException e) {
-            System.err.println("Scene configuration file not found. " + e.getMessage());
+            logger.error("Scene configuration file not found. " + e.getMessage());
         }
     }
 
@@ -64,9 +73,9 @@ public class MainWindowController implements Initializable {
     private void openMyProdButton() {
         Stage stage = (Stage) my.getScene().getWindow();
         try {
-            openButton(stage, "/org/hse/brina/views/my-projects-view.fxml");
+            openButton(stage, "/views/my-projects-view.fxml");
         } catch (IOException e) {
-            System.err.println("Scene configuration file not found. " + e.getMessage());
+            logger.error("Scene configuration file not found. " + e.getMessage());
         }
     }
 
@@ -74,9 +83,9 @@ public class MainWindowController implements Initializable {
     private void openEnterButton() {
         Stage stage = (Stage) Enter.getScene().getWindow();
         try {
-            openButton(stage, "/org/hse/brina/views/enter-id-collab-view.fxml");
+            openButton(stage, "/views/enter-id-collab-view.fxml");
         } catch (IOException e) {
-            System.err.println("Scene configuration file not found. " + e.getMessage());
+            logger.error("Scene configuration file not found. " + e.getMessage());
         }
     }
 

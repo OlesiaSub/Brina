@@ -1,4 +1,4 @@
-package richtext;
+package org.hse.brina.richtext;
 
 import javafx.scene.Node;
 import org.fxmisc.richtext.model.Codec;

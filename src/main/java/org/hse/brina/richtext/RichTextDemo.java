@@ -4,7 +4,7 @@
  * The author dedicates this file to the public domain.
  */
 
-package richtext;
+package org.hse.brina.richtext;
 
 import javafx.application.Application;
 import javafx.beans.binding.BooleanBinding;
@@ -97,10 +97,15 @@ public class RichTextDemo extends Application {
         backBtn.setPrefWidth(25);
         backBtn.setPrefHeight(25);
         backBtn.setTooltip(new Tooltip("Back"));
-        Image image = new Image("/richtext/document-icon.png");
-        ImageView imageView = new ImageView(image);
-        imageView.setFitHeight(60);
-        imageView.setFitWidth(60);
+        ImageView imageView = new ImageView();
+        try {
+            Image image = new Image("/org/hse/brina/richtext/document-icon.png");
+            imageView = new ImageView(image);
+            imageView.setFitHeight(60);
+            imageView.setFitWidth(60);
+        } catch (Exception e){
+            logger.error(e.getMessage());
+        }
 
         Button undoBtn = createButton("undo", area::undo, "Undo");
         Button redoBtn = createButton("redo", area::redo, "Redo");

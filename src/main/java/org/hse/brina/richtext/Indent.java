@@ -1,4 +1,4 @@
-package richtext;
+package org.hse.brina.richtext;
 
 public class Indent
 {

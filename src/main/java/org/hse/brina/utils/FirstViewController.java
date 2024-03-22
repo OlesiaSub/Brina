@@ -9,6 +9,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hse.brina.Config;
 import org.hse.brina.Main;
 
@@ -23,6 +25,7 @@ import java.util.ResourceBundle;
 public class FirstViewController implements Initializable {
     @FXML
     private Label text;
+    private static final Logger logger = LogManager.getLogger();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -51,7 +54,7 @@ public class FirstViewController implements Initializable {
         try {
             loadScene(stage, "/org/hse/brina/views/sign-in-view.fxml");
         } catch (IOException e) {
-            System.err.println("Scene configuration file not found. " + e.getMessage());
+            logger.error("Scene configuration file not found. " + e.getMessage());
         }
     }
 }

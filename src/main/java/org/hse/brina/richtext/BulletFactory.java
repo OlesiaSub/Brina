@@ -1,4 +1,4 @@
-package richtext;
+package org.hse.brina.richtext;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
