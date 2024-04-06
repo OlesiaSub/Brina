@@ -33,7 +33,7 @@
             </HBox>
 
             <HBox spacing="10" >
-                <Button fx:id="my" prefWidth="140" prefHeight="27" onAction="#openMyProdButton" styleClass="file-button" text="My projects" />
+                <Button fx:id="my" prefWidth="140" prefHeight="27" styleClass="file-button" text="My projects" onAction="#openMyProdButton"/>
                 <ImageView fitWidth="30" fitHeight="30">
                     <Image url="@../assets/projects-list.png"/>
                 </ImageView>

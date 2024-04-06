@@ -12,6 +12,7 @@ import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hse.brina.Config;
 import org.hse.brina.Main;
 import org.hse.brina.richtext.RichTextDemo;
 
@@ -40,13 +41,9 @@ public class MainWindowController implements Initializable {
 
     private void openButton(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
-        try {
             Parent sceneLoader = loader.load();
             Scene scene = new Scene(sceneLoader, stage.getWidth(), stage.getHeight());
             stage.setScene(scene);
-        } catch (Exception e) {
-            logger.error("Error loading FXML: " + e.getMessage());
-        }
     }
 
     @FXML
@@ -60,7 +57,7 @@ public class MainWindowController implements Initializable {
     private void openCollabButton() {
         Stage stage = (Stage) collab.getScene().getWindow();
         try {
-            openButton(stage, "org/hse/brina/views/collab-view.fxml");
+            openButton(stage, "/org/hse/brina/views/collaboration-view.fxml");
         } catch (IOException e) {
             logger.error("Scene configuration file not found. " + e.getMessage());
         }
@@ -70,17 +67,7 @@ public class MainWindowController implements Initializable {
     private void openMyProdButton() {
         Stage stage = (Stage) my.getScene().getWindow();
         try {
-            openButton(stage, "org/hse/brina/views/my-projects-view.fxml");
-        } catch (IOException e) {
-            logger.error("Scene configuration file not found. " + e.getMessage());
-        }
-    }
-
-    @FXML
-    private void openEnterButton() {
-        Stage stage = (Stage) Enter.getScene().getWindow();
-        try {
-            openButton(stage, "org/hse/brina/views/enter-id-collab-view.fxml");
+            openButton(stage, "/org/hse/brina/views/projects-view.fxml");
         } catch (IOException e) {
             logger.error("Scene configuration file not found. " + e.getMessage());
         }
