@@ -36,6 +36,7 @@ public class Server {
 
     public static void main(String[] args) {
         Server server = new Server(8080);
+
         server.start();
         //server.stop();
     }
@@ -173,7 +174,7 @@ public class Server {
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, username);
                 statement.setString(2, filename);
-                statement.setString(3, Config.getProjectPath().substring(0, 25) + "documents/" + filename);
+                statement.setString(3, Config.getProjectPath().substring(0, Config.getProjectPath().length() - 19) + "documents/" + filename);
                 statement.setString(4, "w");
                 statement.setInt(5, 0);
                 statement.executeUpdate();

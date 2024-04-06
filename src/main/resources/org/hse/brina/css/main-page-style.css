@@ -27,3 +27,23 @@
     -fx-background-repeat: no-repeat;
     -fx-background-position: left center;
 }
+
+.list-cell {
+    -fx-padding: 5;
+}
+
+.list-cell:hover {
+    -fx-background-color: #acc6ea;
+}
+
+.list-view {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.back {
+    -fx-background-color: white;
+    -fx-background-image: url(/org/hse/brina/richtext/back.png);
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}

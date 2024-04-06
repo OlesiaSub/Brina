@@ -3,43 +3,18 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.scene.text.Text?>
-<HBox alignment="CENTER" xmlns="http://javafx.com/javafx" spacing="10"
+<VBox xmlns="http://javafx.com/javafx" spacing="10"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.hse.brina.utils.CollaborationController"
       style="-fx-background-color: white"
       stylesheets="@../css/main-page-style.css">
-
-    <TextField fx:id="EnterIdField" prefWidth="200" prefHeight="50" styleClass="login-field" />
-<!--    <Button fx:id="button" text="Hello" styleClass="button"/>-->
-
-    <Button
-            fx:id="Enter" onAction="#openEnterButton"
-            styleClass="file-button" text = "Enter Id">
-    </Button>
-
-</HBox>
-
-
-<!--        <?xml version="1.0" encoding="UTF-8"?>-->
-
-<!--        <?import java.lang.*?>-->
-<!--        <?import java.util.*?>-->
-<!--        <?import javafx.scene.*?>-->
-<!--        <?import javafx.scene.control.*?>-->
-<!--        <?import javafx.scene.layout.*?>-->
-
-<!--<VBox xmlns="http://javafx.com/javafx"-->
-<!--      xmlns:fx="http://javafx.com/fxml"-->
-<!--      fx:controller="org.hse.brina.utils.CollaborationController"-->
-<!--      prefHeight="400.0" prefWidth="600.0"-->
-<!--      alignment="CENTER"-->
-<!--      stylesheets="@../css/first-page-style.css">-->
-
-<!--<Button fx:id="button" text="Hello" styleClass="button"/>-->
-<!--</VBox>-->
-
-
-
-
-
+    <Button fx:id="backButton" onAction="#backButtonClicked" alignment="TOP_LEFT" styleClass="back" prefWidth="30" prefHeight="30"/>
+    <!--<VBox prefHeight="120"/>-->
+    <HBox alignment="CENTER"  spacing="10">
+        <TextField fx:id="EnterIdField" prefWidth="200" prefHeight="50" styleClass="login-field" />
+        <Button
+                fx:id="Enter" onAction="#openEnterButton"
+                styleClass="file-button" text = "Enter Id">
+        </Button>
+    </HBox>
+</VBox>

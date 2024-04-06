@@ -52,9 +52,7 @@ public class SuccessfulSignUpController {
     private void loadScene(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
         Parent logInLoader = loader.load();
-        int width = (int) stage.getWidth();
-        int height = (int) stage.getHeight();
-        Scene scene = new Scene(logInLoader, width, height);
+        Scene scene = new Scene(logInLoader, stage.getScene().getWidth(), stage.getScene().getHeight());
         stage.setScene(scene);
     }
 }

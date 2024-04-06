@@ -40,7 +40,9 @@ import org.hse.brina.Main;
 import org.reactfx.SuspendableNo;
 import org.reactfx.util.Either;
 import org.reactfx.util.Tuple2;
+import org.xml.sax.SAXException;
 
+import javax.swing.text.BadLocationException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,6 +65,8 @@ public class RichTextDemo extends Application {
     private static final Logger logger = LogManager.getLogger();
     public final FoldableStyledArea area = new FoldableStyledArea();
     public final SuspendableNo updatingToolbar = new SuspendableNo();
+    public String previousView = "/org/hse/brina/views/main-window-view.fxml";
+
     public Stage mainStage;
 
     {
@@ -78,6 +82,7 @@ public class RichTextDemo extends Application {
 
     public void start(Stage primaryStage) {
         mainStage = primaryStage;
+//        previousView = view;
 
         Button loadBtn = createButton("loadfile", this::loadDocument, "Load document.\n\n" + "Note: the demo will load only previously-saved \"" + RTF_FILE_EXTENSION + "\" files. " + "This file format is abitrary and may change across versions.");
         Button saveBtn = createButton("savefile", this::saveDocument, "Save document.\n\n" + "Note: the demo will save the area's content to a \"" + RTF_FILE_EXTENSION + "\" file. " + "This file format is abitrary and may change across versions.");
@@ -88,14 +93,14 @@ public class RichTextDemo extends Application {
         Button backBtn = new Button();
         backBtn.getStyleClass().add("back");
         backBtn.setOnAction(e -> {
-            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/org/hse/brina/views/main-window-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource(previousView));
             Parent pageLoader = null;
             try {
                 pageLoader = loader.load();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
-            Scene scene = new Scene(pageLoader, primaryStage.getWidth(), primaryStage.getHeight());
+            Scene scene = new Scene(pageLoader, primaryStage.getScene().getWidth(), primaryStage.getScene().getHeight());
             primaryStage.setScene(scene);
             area.requestFocus();
         });
@@ -356,7 +361,7 @@ public class RichTextDemo extends Application {
 
         windowVBox.getChildren().addAll(upperToolbarHBox, new Separator(Orientation.HORIZONTAL), toolBar2, new Separator(Orientation.HORIZONTAL), vsPane);
 
-        Scene scene = new Scene(windowVBox, primaryStage.getWidth(), primaryStage.getHeight());
+        Scene scene = new Scene(windowVBox, primaryStage.getScene().getWidth(), primaryStage.getScene().getHeight());
 
         if (RichTextDemo.class.getResource("rich-text.css") != null) {
             scene.getStylesheets().add(RichTextDemo.class.getResource("rich-text.css").toExternalForm());
@@ -475,7 +480,7 @@ public class RichTextDemo extends Application {
         if (selectedFile != null) {
             Path filePath = selectedFile.toPath();
             String fileName = filePath.getFileName().toString();
-            Path newPath = Paths.get(Config.getProjectPath().substring(0, 25) + "documents/" + fileName);
+            Path newPath = Paths.get(Config.getProjectPath().substring(0, Config.getProjectPath().length() - 19) + "documents/" + fileName);
             save(selectedFile);
             try {
                 Files.copy(filePath, newPath, StandardCopyOption.REPLACE_EXISTING);
@@ -485,6 +490,7 @@ public class RichTextDemo extends Application {
             Config.client.sendMessage("saveDocument " + fileName + " " + Config.client.getName());
         }
     }
+
 
     public void save(File file) {
         StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> doc = area.getDocument();
@@ -501,6 +507,19 @@ public class RichTextDemo extends Application {
                 logger.error(fnfe.getMessage());
             }
         });
+
+//        try {
+//            RTFConverter.convertRtfToTxt(file.getAbsolutePath(), "example.txt", doc);
+//            RTFConverter.convertRtfToPdf(file.getAbsolutePath(), "example.pdf");
+//            area.getAccessibleText();
+//            area.getText(0);
+//        } catch (BadLocationException | IOException e) {
+//            logger.error(e.getMessage());
+//        } catch (TikaException e) {
+//            throw new RuntimeException(e);
+//        } catch (SAXException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     /**
@@ -673,6 +692,7 @@ public class RichTextDemo extends Application {
         public void unfold() {
             FoldableStyledArea area = (FoldableStyledArea) getOwnerNode();
             area.unfoldParagraphs(area.getCurrentParagraph());
+
         }
     }
 }

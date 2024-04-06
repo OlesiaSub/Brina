@@ -19,9 +19,6 @@ import org.hse.brina.richtext.RichTextDemo;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.Map;
-import java.util.HashMap;
-
 
 /**
  * MainWindowController управляет главным окном приложения,
@@ -44,15 +41,16 @@ public class MainWindowController implements Initializable {
 
     private void openButton(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
-            Parent sceneLoader = loader.load();
-            Scene scene = new Scene(sceneLoader, stage.getWidth(), stage.getHeight());
-            stage.setScene(scene);
+        Parent sceneLoader = loader.load();
+        Scene scene = new Scene(sceneLoader, stage.getScene().getWidth(), stage.getScene().getHeight());
+        stage.setScene(scene);
     }
 
     @FXML
     private void openCreateButton() {
         Stage stage = (Stage) create_new.getScene().getWindow();
         RichTextDemo richTextWindow = new RichTextDemo();
+        richTextWindow.previousView = "/org/hse/brina/views/main-window-view.fxml";
         richTextWindow.start(stage);
     }
 
@@ -74,18 +72,7 @@ public class MainWindowController implements Initializable {
         } catch (IOException e) {
             logger.error("Scene configuration file not found. " + e.getMessage());
         }
-        String username = Config.client.getName();
-        Config.client.sendMessage("getDocuments " + username);
-        String response = Config.client.receiveMessage();
-
-        Map<String, String> userDocuments = new HashMap<>();
-        String[] pairs = response.split(" ");
-        for (int i = 0; i < pairs.length - 1; i += 2) {
-            userDocuments.put(pairs[i], pairs[i + 1]);
-        }
     }
-
-
 
     @FXML
     @Override

@@ -4,12 +4,14 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.text.Text?>
-<VBox alignment="CENTER" xmlns="http://javafx.com/javafx" spacing="10"
+<VBox xmlns="http://javafx.com/javafx" spacing="10"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.hse.brina.utils.ProjectsController"
       style="-fx-background-color: white"
       stylesheets="@../css/main-page-style.css">
-<Text text="There you can see your projects (coming soon...)">
-</Text>
+    <HBox prefHeight="60">
+        <Button fx:id="backButton" onAction="#backButtonClicked" alignment="TOP_LEFT" styleClass="back" prefWidth="30" prefHeight="30"/>
+    </HBox>
+    <ListView fx:id="documentList" onMouseClicked="#documentClicked"/>
 </VBox>
 
