@@ -1,7 +1,5 @@
 package org.hse.brina.database;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.hse.brina.Config;
 
 import java.sql.Connection;
@@ -10,15 +8,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Connector {
-
-    private static final Logger logger = LogManager.getLogger();
-
     public static void connect() {
         Connection connector = null;
         try {
             String url = "jdbc:sqlite:" + Config.getPathToDB();
             connector = DriverManager.getConnection(url);
-            logger.info("Connection to SQLite has been established.");
+
+            System.out.println("Connection to SQLite has been established.");
 
             String sql = "CREATE TABLE IF NOT EXISTS users (" +
                     "username TEXT NOT NULL," +
@@ -26,20 +22,32 @@ public class Connector {
                     ")";
             Statement statement = connector.createStatement();
             statement.executeUpdate(sql);
-            logger.info("Table has been created");
+            sql = "CREATE TABLE IF NOT EXISTS user_documents (" +
+                    "username TEXT NOT NULL," +
+                    "filename TEXT NOT NULL," +
+                    "file_path TEXT NOT NULL," +
+                    "access CHAR(1)," +
+                    "lock INTEGER," +
+                    "PRIMARY KEY (username, filename)" +
+                    ")";
+            statement.executeUpdate(sql);
+            System.out.println("Tables has been created");
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            System.out.println(e.getMessage());
         } finally {
             try {
                 if (connector != null) {
                     connector.close();
                 }
             } catch (SQLException ex) {
-                logger.error(ex.getMessage());
+                System.out.println(ex.getMessage());
             }
         }
     }
 
+    /**
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         //ExecuteCommands.main(args);
         connect();

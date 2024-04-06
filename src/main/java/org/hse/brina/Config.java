@@ -2,6 +2,7 @@ package org.hse.brina;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hse.brina.client.Client;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -13,6 +14,8 @@ import java.util.Properties;
 public class Config {
     private static final Properties properties = new Properties();
     private static final Logger logger = LogManager.getLogger();
+
+    public static Client client = new Client("localhost", 8080);
 
     static {
         try (InputStream inputStream = Config.class.getClassLoader().getResourceAsStream("config.properties")) {

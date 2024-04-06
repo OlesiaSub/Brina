@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hse.brina.Config;
 import org.hse.brina.client.Client;
 
 import java.io.IOException;
@@ -40,9 +41,9 @@ public class SignUpController extends SignInController {
         boolean isValid = checkIfFieldsAreEmpty();
         String username = loginField.getText();
         String password = passwordField.getText();
-        Client client = new Client("localhost", 8080);
-        client.sendMessage("signUpUser " + username + " " + password);
-        String response = client.receiveMessage();
+        Config.client.setName(username);
+        Config.client.sendMessage("signUpUser " + username + " " + password);
+        String response = Config.client.receiveMessage();
         if (isValid) {
             try {
                 if (response.equals("User with the same name already exists")) {

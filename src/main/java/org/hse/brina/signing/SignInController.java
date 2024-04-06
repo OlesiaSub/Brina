@@ -111,10 +111,9 @@ public class SignInController {
         boolean isValid = checkIfFieldsAreEmpty();
         String username = loginField.getText();
         String password = passwordField.getText();
-
-        Client client = new Client("localhost", 8080);
-        client.sendMessage("signInUser " + username + " " + password);
-        String response = client.receiveMessage();
+        Config.client.setName(username);
+        Config.client.sendMessage("signInUser " + username + " " + password);
+        String response = Config.client.receiveMessage();
         if (response.equals("User with this name not found")) {
             invalidLoginField.setText("User with this name doesn't exist");
             invalidLoginField.setVisible(true);

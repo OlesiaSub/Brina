@@ -11,6 +11,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.*;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Server {
     private static final Logger logger = LogManager.getLogger();
@@ -114,6 +116,29 @@ public class Server {
                         } else {
                             out.println("Invalid command format");
                         }
+                    } else if (inputLine.startsWith("getDocuments")) {
+                        String[] userData = inputLine.split(" ");
+                        if (userData.length == 2) {
+                            String username = userData[1];
+                            Map<String, String> userDocuments = getUserDocuments(username);
+                            StringBuilder stringBuilder = new StringBuilder();
+                            for (Map.Entry<String, String> entry : userDocuments.entrySet()) {
+                                stringBuilder.append(entry.getKey()).append(" ").append(entry.getValue()).append(" ");
+                            }
+                            out.println(stringBuilder.toString().trim());
+                        } else {
+                            out.println("Invalid command format");
+                        }
+                    } else if (inputLine.startsWith("saveDocument")) {
+                        String[] userData = inputLine.split(" ");
+                        if (userData.length == 3) {
+                            String fileName = userData[1];
+                            String username = userData[2];
+                            addDocument(fileName, username);
+                            out.println("Document saved");
+                        } else {
+                            out.println("Invalid command format");
+                        }
                     } else {
                         out.println("Unknown command");
                     }
@@ -136,6 +161,21 @@ public class Server {
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, username);
                 statement.setString(2, password);
+                statement.executeUpdate();
+                logger.info("User added into db");
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        private void addDocument(String filename, String username) {
+            String sql = "INSERT INTO user_documents (username, filename, file_path, access, lock) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                statement.setString(2, filename);
+                statement.setString(3, Config.getProjectPath().substring(0, 25) + "documents/" + filename);
+                statement.setString(4, "w");
+                statement.setInt(5, 0);
                 statement.executeUpdate();
                 logger.info("User added into db");
             } catch (SQLException e) {
@@ -169,6 +209,24 @@ public class Server {
             }
             return true;
         }
+
+        private Map<String, String> getUserDocuments(String username) {
+            Map<String, String> documentsMap = new HashMap<>();
+            String sql = "SELECT filename, file_path FROM user_documents WHERE username = ?";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                ResultSet resultSet = statement.executeQuery();
+                while (resultSet.next()) {
+                    String filename = resultSet.getString("filename");
+                    String filePath = resultSet.getString("file_path");
+                    documentsMap.put(filename, filePath);
+                }
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+            }
+            return documentsMap;
+        }
+
 
         public void stop() {
             try {

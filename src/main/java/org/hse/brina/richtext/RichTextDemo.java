@@ -35,12 +35,17 @@ import org.fxmisc.richtext.GenericStyledArea;
 import org.fxmisc.richtext.StyledTextArea;
 import org.fxmisc.richtext.TextExt;
 import org.fxmisc.richtext.model.*;
+import org.hse.brina.Config;
 import org.hse.brina.Main;
 import org.reactfx.SuspendableNo;
 import org.reactfx.util.Either;
 import org.reactfx.util.Tuple2;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -54,7 +59,7 @@ import static org.fxmisc.richtext.model.TwoDimensional.Bias.Forward;
 public class RichTextDemo extends Application {
 
     // the saved/loaded files and their format are arbitrary and may change across versions
-    public static final String RTF_FILE_EXTENSION = ".rtf";
+    public static final String RTF_FILE_EXTENSION = ".rtfx";
     private static final Logger logger = LogManager.getLogger();
     public final FoldableStyledArea area = new FoldableStyledArea();
     public final SuspendableNo updatingToolbar = new SuspendableNo();
@@ -468,7 +473,16 @@ public class RichTextDemo extends Application {
         fileChooser.setInitialFileName("example rtf file" + RTF_FILE_EXTENSION);
         File selectedFile = fileChooser.showSaveDialog(mainStage);
         if (selectedFile != null) {
+            Path filePath = selectedFile.toPath();
+            String fileName = filePath.getFileName().toString();
+            Path newPath = Paths.get(Config.getProjectPath().substring(0, 25) + "documents/" + fileName);
             save(selectedFile);
+            try {
+                Files.copy(filePath, newPath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
+            Config.client.sendMessage("saveDocument " + fileName + " " + Config.client.getName());
         }
     }
 

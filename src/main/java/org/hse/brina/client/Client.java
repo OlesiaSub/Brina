@@ -15,6 +15,8 @@ public class Client {
     private PrintWriter out;
     private BufferedReader in;
 
+    private String username;
+
 
     public Client(String serverAddress, int serverPort) {
         try {
@@ -57,5 +59,12 @@ public class Client {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    public void setName(String name) {
+        this.username = name;
+    }
+    public String getName() {
+        return username;
     }
 }
