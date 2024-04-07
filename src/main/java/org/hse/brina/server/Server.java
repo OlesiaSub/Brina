@@ -17,9 +17,6 @@ import java.util.HashMap;
 public class Server {
     private static final Logger logger = LogManager.getLogger();
     private ServerSocket serverSocket;
-    private Socket clientSocket;
-    private BufferedReader in;
-    private PrintWriter out;
     private Connection connection;
 
     public Server(int port) {
@@ -28,7 +25,7 @@ public class Server {
             logger.info("Server started. Waiting for clients...");
             String url = "jdbc:sqlite:" + Config.getPathToDB();
             connection = DriverManager.getConnection(url);
-            logger.info("Connection to SQLite has been established.");
+            logger.info("Connection to SQLite has been established");
         } catch (IOException | SQLException e) {
             logger.error(e.getMessage());
         }
@@ -38,7 +35,6 @@ public class Server {
         Server server = new Server(8080);
 
         server.start();
-        //server.stop();
     }
 
     public void start() {
@@ -228,7 +224,6 @@ public class Server {
             return documentsMap;
         }
 
-
         public void stop() {
             try {
                 in.close();
@@ -240,7 +235,5 @@ public class Server {
                 logger.error(e.getMessage());
             }
         }
-
-
     }
 }

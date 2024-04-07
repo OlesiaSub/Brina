@@ -41,10 +41,19 @@ public class SignUpController extends SignInController {
         boolean isValid = checkIfFieldsAreEmpty();
         String username = loginField.getText();
         String password = passwordField.getText();
-        Config.client.setName(username);
-        Config.client.sendMessage("signUpUser " + username + " " + password);
-        String response = Config.client.receiveMessage();
+        String pattern = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9@#$%]).{8,40}";
+        if (!password.matches(pattern)) {
+            invalidPasswordField.setText("Weak password. The password must contain a lowercase " +
+                    "and an uppercase letter, as well as a number or special character");
+            invalidPasswordField.setVisible(true);
+            isValid = false;
+        } else {
+            isValid = true;
+        }
         if (isValid) {
+            Config.client.setName(username);
+            Config.client.sendMessage("signUpUser " + username + " " + password);
+            String response = Config.client.receiveMessage();
             try {
                 if (response.equals("User with the same name already exists")) {
                     invalidLoginField.setText("User with this name already exists");
