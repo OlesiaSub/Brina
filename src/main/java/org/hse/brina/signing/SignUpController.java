@@ -2,6 +2,9 @@ package org.hse.brina.signing;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +20,7 @@ import java.io.IOException;
  */
 public class SignUpController extends SignInController {
     private static final Logger logger = LogManager.getLogger();
+    public VBox passwordRulesVBox;
     @FXML
     private Button backButton;
 
@@ -43,12 +47,18 @@ public class SignUpController extends SignInController {
         String password = passwordField.getText();
         String pattern = "(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9@#$%]).{8,40}";
         if (!password.matches(pattern)) {
-            invalidPasswordField.setText("Weak password. The password must contain a lowercase " +
-                    "and an uppercase letter, as well as a number or special character");
-            invalidPasswordField.setVisible(true);
+            passwordRulesVBox.getChildren().clear();
+            Text passwordRules = new Text();
+            passwordRules.setText("Weak password. The password must contain a lowercase and\nan uppercase letter, as well as a number or special character");
+            passwordRules.setFill(Color.valueOf("#e0850c"));
+            passwordRulesVBox.getChildren().add(passwordRules);
+            Text emptyText = new Text();
+            emptyText.setText(" ");
+            passwordRulesVBox.getChildren().add(emptyText);
             isValid = false;
         } else {
             isValid = true;
+            passwordRulesVBox.getChildren().removeAll();
         }
         if (isValid) {
             Config.client.setName(username);

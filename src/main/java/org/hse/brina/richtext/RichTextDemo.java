@@ -13,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,8 +27,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
+import javafx.stage.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -66,6 +66,8 @@ public class RichTextDemo extends Application {
     public final FoldableStyledArea area = new FoldableStyledArea();
     public final SuspendableNo updatingToolbar = new SuspendableNo();
     public String previousView = "/org/hse/brina/views/main-window-view.fxml";
+
+    private Scene mainScene;
 
     public Stage mainStage;
 
@@ -323,9 +325,11 @@ public class RichTextDemo extends Application {
 
         TextField documentName = new TextField();
         documentName.setText("New Document");
+        documentName.setStyle("-fx-font-size: 13px");
         documentName.setMaxWidth(200);
         documentName.setMaxHeight(50);
-        documentName.setPrefWidth(100);
+        documentName.setPrefHeight(30);
+        documentName.setPrefWidth(150);
         documentName.setAlignment(Pos.BASELINE_LEFT);
         ToolBar toolBar1 = new ToolBar(backBtn, loadBtn, saveBtn, new Separator(Orientation.VERTICAL), undoBtn, redoBtn, new Separator(Orientation.VERTICAL), cutBtn, copyBtn, pasteBtn, new Separator(Orientation.VERTICAL), boldBtn, italicBtn, underlineBtn, strikeBtn, new Separator(Orientation.VERTICAL), alignLeftBtn, alignCenterBtn, alignRightBtn, alignJustifyBtn, new Separator(Orientation.VERTICAL), increaseIndentBtn, decreaseIndentBtn, new Separator(Orientation.VERTICAL), insertImageBtn, new Separator(Orientation.VERTICAL), HBoxParagraphBackground);
 
@@ -334,12 +338,22 @@ public class RichTextDemo extends Application {
         toolBar1.setPrefHeight(30);
         toolBar1.setMaxHeight(30);
 
+        HBox documentNameHBox = new HBox();
+        Button shareButton = new Button();
+        shareButton.setText("Share");
+        shareButton.setStyle("");
+        shareButton.setOnAction(e -> showPopupWindow(primaryStage));
+        shareButton.setAlignment(Pos.TOP_RIGHT);
+        shareButton.setStyle("-fx-background-color: #3d6dac; -fx-text-fill: white; -fx-font-size: 13px; fx-border-color: #3d6dac; -fx-border-width: 1px; -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-margin-right: 10px;");
+        documentNameHBox.setStyle("-fx-spacing: 10");
+        documentNameHBox.getChildren().addAll(documentName, shareButton);
+
         VBox upperToolbarVBox = new VBox();
         upperToolbarVBox.setStyle("-fx-background-color: white; -fx-alignment: TOP_LEFT; -fx-spacing: 1px;");
         upperToolbarVBox.setAlignment(Pos.TOP_LEFT);
         HBox.setHgrow(upperToolbarVBox, Priority.ALWAYS);
         VBox.setVgrow(upperToolbarVBox, Priority.ALWAYS);
-        upperToolbarVBox.getChildren().addAll(documentName, toolBar1);
+        upperToolbarVBox.getChildren().addAll(documentNameHBox, toolBar1);
 
         HBox upperToolbarHBox = new HBox();
         upperToolbarHBox.setStyle("-fx-background-color: white; -fx-alignment: TOP_LEFT; -fx-spacing: 0px;");
@@ -370,8 +384,67 @@ public class RichTextDemo extends Application {
         }
 
         primaryStage.setScene(scene);
+        mainScene = scene;
         area.requestFocus();
         primaryStage.show();
+    }
+
+    private void showPopupWindow(Stage primaryStage) {
+        Stage popupStage = new Stage();
+        popupStage.initOwner(primaryStage);
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        Text infoText = new Text("Add users who will have access to your document:");
+        infoText.setStyle("-fx-font-size: 13 px");
+        infoText.setFill(Color.BLACK);
+        TextField usersTextField = new TextField();
+        usersTextField.setPrefWidth(260);
+        usersTextField.setPrefHeight(30);
+        usersTextField.getStyleClass().add("login-field");
+        Text accessText = new Text("Choose access rights:");
+        accessText.setStyle("-fx-font-size: 13 px");
+        accessText.setFill(Color.BLACK);
+        Button readerButton = new Button();
+        readerButton.setText("Reader");
+        readerButton.getStyleClass().add("light-button");
+        Button editorButton = new Button();
+        editorButton.setText("Editor");
+        editorButton.getStyleClass().add("light-button");
+
+        readerButton.setOnAction(event -> {
+            //manage reader access for usersTextField.getText()
+        });
+        editorButton.setOnAction(event -> {
+            //manage editor access for usersTextField.getText()
+        });
+        HBox rightsHBox = new HBox();
+        rightsHBox.setSpacing(10);
+        rightsHBox.setAlignment(Pos.CENTER);
+        rightsHBox.getChildren().addAll(readerButton, editorButton);
+        rightsHBox.getStyleClass().add("white-box");
+        VBox buttonsVBox = new VBox();
+        buttonsVBox.setAlignment(Pos.CENTER);
+        Button okButton = new Button();
+        okButton.setText("OK");
+        okButton.getStyleClass().add("dark-button");
+        okButton.setAlignment(Pos.CENTER);
+        okButton.setOnAction(event -> popupStage.close());
+        buttonsVBox.getChildren().addAll(rightsHBox, okButton);
+        buttonsVBox.setSpacing(10);
+        buttonsVBox.getStyleClass().add("white-box");
+        VBox popupLayout = new VBox(infoText, usersTextField, accessText, buttonsVBox);
+        popupLayout.getStyleClass().add("white-box");
+        popupLayout.setSpacing(10);
+        Scene popupScene = new Scene(popupLayout, 300, 200);
+        popupScene.getStylesheets().add("/org/hse/brina/css/sign-in-page-style.css");
+        popupStage.setScene(popupScene);
+        if (mainScene != null) {
+            Window previousWindow = mainScene.getWindow();
+            double centerX = previousWindow.getX() + (previousWindow.getWidth() - 300) / 2;
+            double centerY = previousWindow.getY() + (previousWindow.getHeight() - 200) / 2;
+            popupStage.setX(centerX);
+            popupStage.setY(centerY);
+        }
+        popupStage.showAndWait();
     }
 
     public Button createButton(String styleClass, Runnable action, String toolTip) {

@@ -26,19 +26,10 @@ public class ProjectsController {
     public ListView<String> documentList;
     @FXML
     public Button backButton;
-
     private Map<String, String> userDocuments;
-    private Map<String, String> documentMap;
     private static final Logger logger = LogManager.getLogger();
 
     public void initialize() {
-
-//            documentMap = new LinkedHashMap<>();
-//            documentMap.put("Документ h1", "путь к документу 1");
-//            documentMap.put("Документ 2", "путь к документу 2");
-//            documentMap.put("Документ 3", "путь к документу 3");
-//            documentList.getItems().addAll(documentMap.keySet());
-
         String username = Config.client.getName();
         Config.client.sendMessage("getDocuments " + username);
         String response = Config.client.receiveMessage();
@@ -48,7 +39,6 @@ public class ProjectsController {
         for (int i = 0; i < pairs.length - 1; i += 2) {
             userDocuments.put(pairs[i], pairs[i + 1]);
         }
-//        userDocuments.put("Doc1", "Path");
         documentList.getItems().addAll(userDocuments.keySet());
     }
 

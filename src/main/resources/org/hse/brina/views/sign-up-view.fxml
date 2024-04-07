@@ -45,7 +45,11 @@
                     </Button>
                 </VBox>
             </HBox>
-            <Text text=" " />
+<!--            <Text fx:id="passwordRules1" text="Weak password. The password must contain a lowercase and" visible="false"/>-->
+<!--            <Text fx:id="passwordRules2" text="an uppercase letter, as well as a number or special character" visible="false"/>-->
+            <VBox fx:id="passwordRulesVBox">
+                <Text text=" "/>
+            </VBox>
             <VBox alignment="CENTER">
                 <Button fx:id="signUpButton" alignment="CENTER" onAction="#signUpButtonClicked" styleClass="dark-button" text="Sign up" />
                 <HBox alignment="CENTER" spacing="5">
