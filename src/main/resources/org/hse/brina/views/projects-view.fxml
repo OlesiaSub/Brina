@@ -8,10 +8,14 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="org.hse.brina.utils.ProjectsController"
       style="-fx-background-color: white"
-      stylesheets="@../css/main-page-style.css">
-    <HBox prefHeight="60">
-        <Button fx:id="backButton" onAction="#backButtonClicked" alignment="TOP_LEFT" styleClass="back" prefWidth="30" prefHeight="30"/>
+      stylesheets="@../css/main-page-style.css"
+alignment="CENTER">
+    <HBox prefHeight="60" spacing="10">
+        <Button fx:id="backButton" onAction="#backButtonClicked" alignment="TOP_LEFT" styleClass="back" prefWidth="25" prefHeight="25"/>
+        <Text text="Documents" textAlignment="RIGHT" style="-fx-text-fill: #101d2f ; -fx-font-size: 16px; -fx-alignment: right" />
     </HBox>
-    <ListView fx:id="documentList" onMouseClicked="#documentClicked"/>
+    <ListView fx:id="documentList" onMouseClicked="#documentClicked">
+
+    </ListView>
 </VBox>
 

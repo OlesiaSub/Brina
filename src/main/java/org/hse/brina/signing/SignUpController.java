@@ -56,9 +56,11 @@ public class SignUpController extends SignInController {
             emptyText.setText(" ");
             passwordRulesVBox.getChildren().add(emptyText);
             isValid = false;
+            setEyeButtonAction();
         } else {
             isValid = true;
             passwordRulesVBox.getChildren().removeAll();
+            setEyeButtonAction();
         }
         if (isValid) {
             Config.client.setName(username);

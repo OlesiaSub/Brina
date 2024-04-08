@@ -31,8 +31,8 @@ public class Main extends Application {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/first-view.fxml"));
         Parent root = loader.load();
         stage.setTitle("Brina");
-        try (InputStream iconStream1 = getClass().getResourceAsStream("assets/small-icon.png")) {
-            Image icon = new Image(iconStream1);
+        try (InputStream iconStream = getClass().getResourceAsStream("assets/small-icon.png")) {
+            Image icon = new Image(iconStream);
             stage.getIcons().add(icon);
         } catch (Exception e) {
             logger.error("Error loading icon: " + e.getMessage());

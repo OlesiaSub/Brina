@@ -50,6 +50,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -66,6 +67,8 @@ public class RichTextDemo extends Application {
     public final FoldableStyledArea area = new FoldableStyledArea();
     public final SuspendableNo updatingToolbar = new SuspendableNo();
     public String previousView = "/org/hse/brina/views/main-window-view.fxml";
+
+    private StringBuilder documentIdName = new StringBuilder();
 
     private Scene mainScene;
 
@@ -325,6 +328,7 @@ public class RichTextDemo extends Application {
 
         TextField documentName = new TextField();
         documentName.setText("New Document");
+//        documentIdName.replace(0, documentIdName.length(), documentName.getText());
         documentName.setStyle("-fx-font-size: 13px");
         documentName.setMaxWidth(200);
         documentName.setMaxHeight(50);
@@ -342,7 +346,7 @@ public class RichTextDemo extends Application {
         Button shareButton = new Button();
         shareButton.setText("Share");
         shareButton.setStyle("");
-        shareButton.setOnAction(e -> showPopupWindow(primaryStage));
+        shareButton.setOnAction(e -> showPopupWindow(primaryStage, documentName));
         shareButton.setAlignment(Pos.TOP_RIGHT);
         shareButton.setStyle("-fx-background-color: #3d6dac; -fx-text-fill: white; -fx-font-size: 13px; fx-border-color: #3d6dac; -fx-border-width: 1px; -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-margin-right: 10px;");
         documentNameHBox.setStyle("-fx-spacing: 10");
@@ -389,62 +393,124 @@ public class RichTextDemo extends Application {
         primaryStage.show();
     }
 
-    private void showPopupWindow(Stage primaryStage) {
+    private void showPopupWindow(Stage primaryStage, TextField documentName) {
         Stage popupStage = new Stage();
         popupStage.initOwner(primaryStage);
         popupStage.initModality(Modality.APPLICATION_MODAL);
-        Text infoText = new Text("Add users who will have access to your document:");
-        infoText.setStyle("-fx-font-size: 13 px");
-        infoText.setFill(Color.BLACK);
+        Text documentNameText = new Text("Document name:");
+        documentNameText.setStyle("-fx-font-size: 16px");
+        documentNameText.setFill(Color.BLACK);
+        TextField documentNameTextField = new TextField();
+        documentNameTextField.setText(documentName.getText());
+        documentNameTextField.setStyle("-fx-font-size: 16px");
+        documentNameTextField.getStyleClass().add("login-field");
+        documentNameTextField.setMaxWidth(205);
+        documentNameTextField.setMaxHeight(30);
+        documentNameTextField.setPrefHeight(30);
+        documentNameTextField.setPrefWidth(205);
+        documentNameTextField.setAlignment(Pos.BASELINE_LEFT);
+        HBox nameHBox = new HBox();
+        nameHBox.getChildren().addAll(documentNameText, documentNameTextField);
+        nameHBox.setAlignment(Pos.CENTER);
+        nameHBox.setSpacing(10);
+        nameHBox.setMaxWidth(265);
+
         TextField usersTextField = new TextField();
-        usersTextField.setPrefWidth(260);
+        usersTextField.setPromptText("User with access to the document");
+        usersTextField.setPrefWidth(265);
         usersTextField.setPrefHeight(30);
+        usersTextField.setMaxWidth(265);
+        usersTextField.setMaxHeight(30);
         usersTextField.getStyleClass().add("login-field");
-        Text accessText = new Text("Choose access rights:");
-        accessText.setStyle("-fx-font-size: 13 px");
+        usersTextField.setAlignment(Pos.CENTER);
+
+        Text accessText = new Text("Access rights:");
+        accessText.setStyle("-fx-font-size: 16 px");
         accessText.setFill(Color.BLACK);
+        accessText.setTextAlignment(TextAlignment.CENTER);
         Button readerButton = new Button();
         readerButton.setText("Reader");
-        readerButton.getStyleClass().add("light-button");
+        readerButton.getStyleClass().add("access-button");
         Button editorButton = new Button();
         editorButton.setText("Editor");
-        editorButton.getStyleClass().add("light-button");
-
+        editorButton.getStyleClass().add("access-button");
+        StringBuilder rights = new StringBuilder();
         readerButton.setOnAction(event -> {
-            //manage reader access for usersTextField.getText()
+            editorButton.setStyle("-fx-background-color: white; -fx-text-fill: #3d6dac; -fx-border-color: #3d6dac;");
+            rights.replace(0, rights.length(), "reader");
+            readerButton.setStyle("-fx-background-color: #e0850c; -fx-text-fill: #101d2f; -fx-border-color: #101d2f;");
         });
         editorButton.setOnAction(event -> {
-            //manage editor access for usersTextField.getText()
+            readerButton.setStyle("-fx-background-color: white; -fx-text-fill: #3d6dac; -fx-border-color: #3d6dac;");
+            rights.replace(0, rights.length(), "editor");
+            editorButton.setStyle("-fx-background-color: #e0850c; -fx-text-fill: #101d2f; -fx-border-color: #101d2f;");
         });
         HBox rightsHBox = new HBox();
         rightsHBox.setSpacing(10);
         rightsHBox.setAlignment(Pos.CENTER);
         rightsHBox.getChildren().addAll(readerButton, editorButton);
         rightsHBox.getStyleClass().add("white-box");
+
         VBox buttonsVBox = new VBox();
         buttonsVBox.setAlignment(Pos.CENTER);
-        Button okButton = new Button();
-        okButton.setText("OK");
-        okButton.getStyleClass().add("dark-button");
-        okButton.setAlignment(Pos.CENTER);
-        okButton.setOnAction(event -> popupStage.close());
-        buttonsVBox.getChildren().addAll(rightsHBox, okButton);
+        Button keyButton = new Button();
+        keyButton.setText("Copy Access Key");
+        keyButton.getStyleClass().add("dark-button");
+        keyButton.setPrefWidth(265);
+        keyButton.setAlignment(Pos.CENTER);
+        keyButton.setOnAction(event -> {
+                    //пока randomID есть в таблице генерируем новый ключ :
+//            while(...) {
+//                  String randomID = generateID(); -- генератор случайных чисел написан
+//                }
+//            documentIdName.replace(0, documentIdName.length(), randomID);
+//            сохранение ключа в БД
+//            usersTextField.getText(), rights, documentNameTextField.getText() -- имя пользователя, для кого есть доступ; права доступа; имя документа
+        });
+        buttonsVBox.getChildren().addAll(rightsHBox, keyButton);
         buttonsVBox.setSpacing(10);
         buttonsVBox.getStyleClass().add("white-box");
-        VBox popupLayout = new VBox(infoText, usersTextField, accessText, buttonsVBox);
+        VBox popupLayout = new VBox(nameHBox, usersTextField, accessText, buttonsVBox, keyButton);
+        popupLayout.setAlignment(Pos.CENTER);
         popupLayout.getStyleClass().add("white-box");
         popupLayout.setSpacing(10);
-        Scene popupScene = new Scene(popupLayout, 300, 200);
+        int stageHeight = 250;
+        int stageWidth = 310;
+        Scene popupScene = new Scene(popupLayout, stageWidth, stageHeight);
         popupScene.getStylesheets().add("/org/hse/brina/css/sign-in-page-style.css");
         popupStage.setScene(popupScene);
         if (mainScene != null) {
             Window previousWindow = mainScene.getWindow();
-            double centerX = previousWindow.getX() + (previousWindow.getWidth() - 300) / 2;
-            double centerY = previousWindow.getY() + (previousWindow.getHeight() - 200) / 2;
+            double centerX = previousWindow.getX() + (previousWindow.getWidth() - stageWidth) / 2;
+            double centerY = previousWindow.getY() + (previousWindow.getHeight() - stageHeight) / 2;
             popupStage.setX(centerX);
             popupStage.setY(centerY);
         }
+        try (InputStream iconStream = getClass().getResourceAsStream("/org/hse/brina/assets/small-icon.png")) {
+            Image icon = new Image(iconStream);
+            popupStage.getIcons().add(icon);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        popupStage.setOnHidden(event -> {
+            if(!documentNameTextField.getText().contentEquals(documentName.getText())) {
+                documentName.setText(documentNameTextField.getText());
+                //обновить имя в БД
+            }
+        });
         popupStage.showAndWait();
+    }
+
+    private String generateID() {
+        StringBuilder strKey = new StringBuilder();
+        Random random = new Random();
+
+        for (int i = 0; i < 13; i++) {
+            int digit = random.nextInt(10);
+            strKey.append(digit);
+        }
+
+        return strKey.toString();
     }
 
     public Button createButton(String styleClass, Runnable action, String toolTip) {

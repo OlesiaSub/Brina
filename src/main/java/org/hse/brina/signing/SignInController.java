@@ -1,5 +1,6 @@
 package org.hse.brina.signing;
 
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -50,29 +51,19 @@ public class SignInController {
     private TextField openedPasswordField;
     @FXML
     private ImageView eyeImage;
+    private Image eyeOpenImage;
+    private Image eyeClosedImage;
     private boolean passwordVisible = false;
 
     @FXML
     protected void initialize() {
 
-        try {
-            Image eyeOpen = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/hse/brina/assets/open-eye.png")));
-            Image eyeClosed = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/hse/brina/assets/closed-eye.png")));
+        eyeOpenImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/hse/brina/assets/open-eye.png")));
+        eyeClosedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/hse/brina/assets/closed-eye.png")));
 
-            eyeButton.setOnAction(event -> {
-                if (!passwordVisible) {
-                    changePasswordVisibility(eyeOpen, passwordField, openedPasswordField);
-                } else {
-                    changePasswordVisibility(eyeClosed, openedPasswordField, passwordField);
-
-                }
-            });
-        } catch (Exception e) {
-            logger.error("Error loading assets for password field: " + e.getMessage());
-        }
+        setEyeButtonAction();
 
         invalidLoginField.setOnMouseClicked(event -> hideWarningAboutEmptyField(invalidLoginField));
-
         invalidPasswordField.setOnMouseClicked(event -> hideWarningAboutEmptyField(invalidPasswordField));
 
     }
@@ -117,9 +108,11 @@ public class SignInController {
         if (response.equals("User with this name not found")) {
             invalidLoginField.setText("User with this name doesn't exist");
             invalidLoginField.setVisible(true);
+            setEyeButtonAction();
         } else if (response.equals("Wrong password")) {
             invalidPasswordField.setText("Wrong password");
             invalidPasswordField.setVisible(true);
+            setEyeButtonAction();
         } else if (isValid && response.equals("User logged in")) {
             enter(stage);
         }
@@ -159,6 +152,16 @@ public class SignInController {
         openedPasswordField.setVisible(false);
         eyeImage.setImage(eyeClosed);
         passwordVisible = !passwordVisible;
+    }
+
+    protected void setEyeButtonAction(){
+        eyeButton.setOnAction(event -> {
+            if (!passwordVisible) {
+                changePasswordVisibility(eyeOpenImage, passwordField, openedPasswordField);
+            } else {
+                changePasswordVisibility(eyeClosedImage, openedPasswordField, passwordField);
+            }
+        });
     }
 
 }

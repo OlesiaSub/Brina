@@ -45,8 +45,6 @@
                     </Button>
                 </VBox>
             </HBox>
-<!--            <Text fx:id="passwordRules1" text="Weak password. The password must contain a lowercase and" visible="false"/>-->
-<!--            <Text fx:id="passwordRules2" text="an uppercase letter, as well as a number or special character" visible="false"/>-->
             <VBox fx:id="passwordRulesVBox">
                 <Text text=" "/>
             </VBox>
@@ -62,6 +60,5 @@
             </VBox>
         </VBox>
         <VBox prefWidth="140" style="--fxbackground-color: white" />
-
     </HBox>
 </Pane>

@@ -72,7 +72,6 @@
                     <Button fx:id="signUpButton" onAction="#signUpFromInButtonClicked" styleClass="light-button" text="Sign up now" />
                 </HBox>
             </VBox>
-
         </VBox>
     </HBox>
 </Pane>

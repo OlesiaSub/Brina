@@ -7,6 +7,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.layout.HBox?>
 
+<?import javafx.scene.text.Text?>
 <StackPane xmlns:fx="http://javafx.com/fxml" xmlns="http://javafx.com/javafx"
            style="-fx-background-color: white;"
            stylesheets="@../css/main-page-style.css"
@@ -31,12 +32,14 @@
                     <Image url="@../assets/collaboration.png"/>
                 </ImageView>
             </HBox>
-
             <HBox spacing="10" >
                 <Button fx:id="my" prefWidth="140" prefHeight="27" styleClass="file-button" text="My projects" onAction="#openMyProdButton"/>
                 <ImageView fitWidth="30" fitHeight="30">
                     <Image url="@../assets/projects-list.png"/>
                 </ImageView>
+            </HBox>
+            <HBox spacing="10" alignment="CENTER">
+                <Button fx:id="logOutButton" prefWidth="100" prefHeight="27" styleClass="log-out" text="Log Out" onAction="#logOut"/>
             </HBox>
         </VBox>
     </HBox>

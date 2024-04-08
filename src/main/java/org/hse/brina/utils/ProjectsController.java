@@ -17,16 +17,16 @@ import org.hse.brina.richtext.RichTextDemo;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ProjectsController {
     @FXML
     public ListView<String> documentList;
     @FXML
     public Button backButton;
-    private Map<String, String> userDocuments;
+    private Map<String, String> userDocumentsMap;
     private static final Logger logger = LogManager.getLogger();
 
     public void initialize() {
@@ -34,25 +34,30 @@ public class ProjectsController {
         Config.client.sendMessage("getDocuments " + username);
         String response = Config.client.receiveMessage();
 
-        userDocuments = new LinkedHashMap<>();
+        userDocumentsMap = new LinkedHashMap<>();
         String[] pairs = response.split(" ");
         for (int i = 0; i < pairs.length - 1; i += 2) {
-            userDocuments.put(pairs[i], pairs[i + 1]);
+            userDocumentsMap.put(pairs[i], pairs[i + 1]);
         }
-        documentList.getItems().addAll(userDocuments.keySet());
+        if (userDocumentsMap.isEmpty()){
+            documentList.getItems().add(" ");
+        }
+        documentList.getItems().addAll(userDocumentsMap.keySet());
     }
 
     @FXML
     public void documentClicked(MouseEvent event) {
         Stage stage = (Stage) documentList.getScene().getWindow();
         String key = documentList.getSelectionModel().getSelectedItem();
-        String value = userDocuments.get(key);
-        RichTextDemo richTextWindow = new RichTextDemo();
-        richTextWindow.previousView = "/org/hse/brina/views/projects-view.fxml";
-        richTextWindow.start(stage);
-        File file = new File(value);
-        if(file.exists()) richTextWindow.load(new File(value)); //если это файл пользователя
-        //если это файл другого пользователя, то ввод ключа на совместное редактирование
+        String value = userDocumentsMap.get(key);
+        if(key != null && value!= null && !(Objects.equals(key, " ") || key.isEmpty()) && !(Objects.equals(value, " ") || value.isEmpty())) {
+            RichTextDemo richTextWindow = new RichTextDemo();
+            richTextWindow.previousView = "/org/hse/brina/views/projects-view.fxml";
+            richTextWindow.start(stage);
+            File file = new File(value);
+            if (file.exists()) richTextWindow.load(new File(value)); //если это файл пользователя
+            //если это файл другого пользователя, то ввод ключа на совместное редактирование
+        }
     }
 
     public void backButtonClicked(ActionEvent actionEvent) {

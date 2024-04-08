@@ -1,5 +1,6 @@
 package org.hse.brina.utils;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -28,6 +29,8 @@ public class MainWindowController implements Initializable {
     private static final Logger logger = LogManager.getLogger();
     @FXML
     public HBox imageHBox;
+    @FXML
+    public Button logOutButton;
     @FXML
     private Button Enter;
     @FXML
@@ -78,5 +81,9 @@ public class MainWindowController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         HBox.setHgrow(imageHBox, Priority.ALWAYS);
+    }
+
+    public void logOut(ActionEvent actionEvent) {
+        //log out
     }
 }
