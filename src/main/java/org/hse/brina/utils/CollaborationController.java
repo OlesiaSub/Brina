@@ -7,6 +7,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +27,7 @@ public class CollaborationController {
     @FXML
     public Button backButton;
     private static final Logger logger = LogManager.getLogger();
+    public VBox globalVBox;
 
     private void loadScene(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
@@ -48,5 +52,11 @@ public class CollaborationController {
         } catch (IOException e) {
             logger.error("Scene configuration file not found. " + e.getMessage());
         }
+    }
+
+    @FXML
+    void initialize(){
+        HBox.setHgrow(globalVBox, Priority.ALWAYS);
+        VBox.setVgrow(globalVBox, Priority.ALWAYS);
     }
 }

@@ -48,13 +48,13 @@ public class MainWindowController implements Initializable {
     private void openButton(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
         Parent sceneLoader = loader.load();
+        Scene scene;
         if(!fxmlView.equals("/org/hse/brina/views/sign-in-view.fxml")) {
-            Scene scene = new Scene(sceneLoader, stage.getScene().getWidth(), stage.getScene().getHeight());
-            stage.setScene(scene);
+            scene = new Scene(sceneLoader, stage.getScene().getWidth(), stage.getScene().getHeight());
         } else{
-            Scene scene = new Scene(sceneLoader, Config.getDefaultWidth(), Config.getDefaultHeight());
-            stage.setScene(scene);
+            scene = new Scene(sceneLoader, Config.getDefaultWidth(), Config.getDefaultHeight());
         }
+        stage.setScene(scene);
     }
 
     @FXML
@@ -81,7 +81,7 @@ public class MainWindowController implements Initializable {
         try {
             openButton(stage, "/org/hse/brina/views/projects-view.fxml");
         } catch (IOException e) {
-            logger.error("Scene configuration file not found. " + e.getMessage());
+            logger.error("Scene configuration file not found. here" + e.getMessage());
         }
     }
 
