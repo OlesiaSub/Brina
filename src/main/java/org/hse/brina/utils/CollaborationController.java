@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hse.brina.Config;
 import org.hse.brina.Main;
+import org.hse.brina.richtext.RichTextDemo;
 
 import java.io.IOException;
 
@@ -34,11 +35,9 @@ public class CollaborationController {
     @FXML
     private void openEnterButton() {
         Stage stage = (Stage) Enter.getScene().getWindow();
-        try {
-            loadScene(stage, "/org/hse/brina/views/collaboration-entered-view.fxml");
-        } catch (IOException e) {
-            logger.error("Scene configuration file not found. " + e.getMessage());
-        }
+        RichTextDemo richTextWindow = new RichTextDemo();
+        richTextWindow.previousView = "/org/hse/brina/views/collaboration-view.fxml";
+        richTextWindow.start(stage);
     }
 
     @FXML

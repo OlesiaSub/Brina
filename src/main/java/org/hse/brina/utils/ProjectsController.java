@@ -45,6 +45,11 @@ public class ProjectsController {
         documentList.getItems().addAll(userDocumentsMap.keySet());
     }
 
+    public void initializeList(Map<String, String> DocumentsMap){
+        userDocumentsMap = DocumentsMap;
+        initialize();
+    }
+
     @FXML
     public void documentClicked(MouseEvent event) {
         Stage stage = (Stage) documentList.getScene().getWindow();
@@ -55,7 +60,7 @@ public class ProjectsController {
             richTextWindow.previousView = "/org/hse/brina/views/projects-view.fxml";
             richTextWindow.start(stage);
             File file = new File(value);
-            if (file.exists()) richTextWindow.load(new File(value)); //если это файл пользователя
+            if (file.exists()) richTextWindow.loadRTFX(new File(value)); //если это файл пользователя
             //если это файл другого пользователя, то ввод ключа на совместное редактирование
         }
     }

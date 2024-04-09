@@ -13,7 +13,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -40,9 +39,7 @@ import org.hse.brina.Main;
 import org.reactfx.SuspendableNo;
 import org.reactfx.util.Either;
 import org.reactfx.util.Tuple2;
-import org.xml.sax.SAXException;
 
-import javax.swing.text.BadLocationException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -62,13 +59,15 @@ import static org.fxmisc.richtext.model.TwoDimensional.Bias.Forward;
 public class RichTextDemo extends Application {
 
     // the saved/loaded files and their format are arbitrary and may change across versions
-    public static final String RTF_FILE_EXTENSION = ".rtfx";
+    public static final String RTFX_FILE_EXTENSION = ".rtfx";
     private static final Logger logger = LogManager.getLogger();
     public final FoldableStyledArea area = new FoldableStyledArea();
     public final SuspendableNo updatingToolbar = new SuspendableNo();
     public String previousView = "/org/hse/brina/views/main-window-view.fxml";
 
-    private StringBuilder documentIdName = new StringBuilder();
+    private StringBuilder documentId = new StringBuilder();
+
+    private TextField documentNameField = new TextField();
 
     private Scene mainScene;
 
@@ -87,10 +86,8 @@ public class RichTextDemo extends Application {
 
     public void start(Stage primaryStage) {
         mainStage = primaryStage;
-//        previousView = view;
-
-        Button loadBtn = createButton("loadfile", this::loadDocument, "Load document.\n\n" + "Note: the demo will load only previously-saved \"" + RTF_FILE_EXTENSION + "\" files. " + "This file format is abitrary and may change across versions.");
-        Button saveBtn = createButton("savefile", this::saveDocument, "Save document.\n\n" + "Note: the demo will save the area's content to a \"" + RTF_FILE_EXTENSION + "\" file. " + "This file format is abitrary and may change across versions.");
+        Button loadBtn = createButton("loadfile", this::loadDocument, "Load document.\n\n" + "Note: the demo will load only previously-saved \"" + RTFX_FILE_EXTENSION + "\" files. " + "This file format is abitrary and may change across versions.");
+        Button saveBtn = createButton("savefile", this::saveDocument, "Save document.\n\n" + "Note: the demo will save the area's content to a \"" + RTFX_FILE_EXTENSION + "\" file. " + "This file format is abitrary and may change across versions.");
         CheckBox wrapToggle = new CheckBox("Wrap");
         wrapToggle.setSelected(true);
         area.wrapTextProperty().bind(wrapToggle.selectedProperty());
@@ -328,7 +325,7 @@ public class RichTextDemo extends Application {
 
         TextField documentName = new TextField();
         documentName.setText("New Document");
-//        documentIdName.replace(0, documentIdName.length(), documentName.getText());
+        documentNameField = documentName;
         documentName.setStyle("-fx-font-size: 13px");
         documentName.setMaxWidth(200);
         documentName.setMaxHeight(50);
@@ -581,15 +578,55 @@ public class RichTextDemo extends Application {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load document");
         fileChooser.setInitialDirectory(new File(initialDir));
-        fileChooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("Arbitrary RTF file", "*" + RTF_FILE_EXTENSION));
+
+        setExtensions(fileChooser);
+        FileChooser.ExtensionFilter rtfxExtension = new FileChooser.ExtensionFilter("RTFX Files (*.rtfx)", "*.rtfx");
+        fileChooser.setSelectedExtensionFilter(rtfxExtension);
         File selectedFile = fileChooser.showOpenDialog(mainStage);
         if (selectedFile != null) {
             area.clear();
-            load(selectedFile);
+            String selectedExtension = fileChooser.getSelectedExtensionFilter().getExtensions().get(0).substring(2);
+            switch (selectedExtension) {
+                case "rtfx" -> loadRTFX(selectedFile);
+                case "txt" -> loadTXT(selectedFile);
+                case "pdf" -> loadPDF(selectedFile);
+                case "docx" -> loadDOCX(selectedFile);
+            }
         }
     }
 
-    public void load(File file) {
+    private void setExtensions(FileChooser fileChooser) {
+        FileChooser.ExtensionFilter rtfxExtension = new FileChooser.ExtensionFilter("RTFX Files (*.rtfx)", "*.rtfx");
+        FileChooser.ExtensionFilter txtExtension = new FileChooser.ExtensionFilter("Text Files (*.txt)", "*.txt");
+        FileChooser.ExtensionFilter pdfExtension = new FileChooser.ExtensionFilter("PDF Files (*.pdf)", "*.pdf");
+        FileChooser.ExtensionFilter docxExtension = new FileChooser.ExtensionFilter("Word Documents (*.docx)", "*.docx");
+        fileChooser.getExtensionFilters().addAll(rtfxExtension, txtExtension, pdfExtension, docxExtension);
+    }
+
+    private void loadDOCX(File file) {
+    }
+
+    private void loadPDF(File file) {
+    }
+
+    private void loadTXT(File file) {
+        logger.info("Loading TXT File");
+        try (FileReader reader = new FileReader(file);
+             BufferedReader bufferedReader = new BufferedReader(reader)) {
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+            area.replaceText(String.valueOf(content));
+            String textContent = content.toString();
+            System.out.println(textContent);
+        } catch (IOException e) {
+            logger.error("Error while loading TXT file: " + e.getMessage());
+        }
+    }
+
+    public void loadRTFX(File file) {
         if (area.getStyleCodecs().isPresent()) {
             Tuple2<Codec<ParStyle>, Codec<StyledSegment<Either<String, LinkedImage>, TextStyle>>> codecs = area.getStyleCodecs().get();
             Codec<StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle>> codec = ReadOnlyStyledDocument.codec(codecs._1, codecs._2, area.getSegOps());
@@ -614,24 +651,50 @@ public class RichTextDemo extends Application {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save document");
         fileChooser.setInitialDirectory(new File(initialDir));
-        fileChooser.setInitialFileName("example rtf file" + RTF_FILE_EXTENSION);
+        fileChooser.setInitialFileName(documentNameField.getText() + RTFX_FILE_EXTENSION);
+
+        setExtensions(fileChooser);
+
         File selectedFile = fileChooser.showSaveDialog(mainStage);
         if (selectedFile != null) {
             Path filePath = selectedFile.toPath();
             String fileName = filePath.getFileName().toString();
-            Path newPath = Paths.get(Config.getProjectPath().substring(0, Config.getProjectPath().length() - 19) + "documents/" + fileName);
-            save(selectedFile);
+            String fileExtension = fileChooser.getSelectedExtensionFilter().getExtensions().get(0).substring(2);
+            Path newPath = Paths.get(Config.getProjectPath().substring(0, Config.getProjectPath().length() - 19) + "documents/" + fileName.replace(".rtfx", "." + fileExtension));
+            switch (fileExtension) {
+                case "rtfx" -> saveInRTFXFormat(selectedFile);
+                case "txt" -> saveInTXTFormat(selectedFile);
+                case "pdf" -> saveInPDFFormat(selectedFile);
+                case "docx" -> saveInDOCXFormat(selectedFile);
+            }
             try {
                 Files.copy(filePath, newPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
-                logger.error(e.getMessage());
+                logger.error("Error while saving to Documents folder " + e.getMessage());
             }
             Config.client.sendMessage("saveDocument " + fileName + " " + Config.client.getName());
         }
     }
 
+    private void saveInDOCXFormat(File file) {
+    }
 
-    public void save(File file) {
+    private void saveInPDFFormat(File file) {
+    }
+
+    private void saveInTXTFormat(File file) {
+        StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> doc = area.getDocument();
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(doc.getText());
+            writer.flush();
+        } catch (IOException e) {
+            logger.error("Error while saving the file in TXT format: " + e.getMessage());
+        }
+
+    }
+
+
+    public void saveInRTFXFormat(File file) {
         StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> doc = area.getDocument();
 
         // Use the Codec to save the document in a binary format
@@ -642,23 +705,10 @@ public class RichTextDemo extends Application {
                 DataOutputStream dos = new DataOutputStream(fos);
                 codec.encode(dos, doc);
                 fos.close();
-            } catch (IOException fnfe) {
-                logger.error(fnfe.getMessage());
+            } catch (IOException e) {
+                logger.error("Error while saving the file in RTFX format"+e.getMessage());
             }
         });
-
-//        try {
-//            RTFConverter.convertRtfToTxt(file.getAbsolutePath(), "example.txt", doc);
-//            RTFConverter.convertRtfToPdf(file.getAbsolutePath(), "example.pdf");
-//            area.getAccessibleText();
-//            area.getText(0);
-//        } catch (BadLocationException | IOException e) {
-//            logger.error(e.getMessage());
-//        } catch (TikaException e) {
-//            throw new RuntimeException(e);
-//        } catch (SAXException e) {
-//            throw new RuntimeException(e);
-//        }
     }
 
     /**

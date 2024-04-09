@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -19,6 +20,8 @@ import org.hse.brina.richtext.RichTextDemo;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -45,8 +48,13 @@ public class MainWindowController implements Initializable {
     private void openButton(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
         Parent sceneLoader = loader.load();
-        Scene scene = new Scene(sceneLoader, stage.getScene().getWidth(), stage.getScene().getHeight());
-        stage.setScene(scene);
+        if(!fxmlView.equals("/org/hse/brina/views/sign-in-view.fxml")) {
+            Scene scene = new Scene(sceneLoader, stage.getScene().getWidth(), stage.getScene().getHeight());
+            stage.setScene(scene);
+        } else{
+            Scene scene = new Scene(sceneLoader, Config.getDefaultWidth(), Config.getDefaultHeight());
+            stage.setScene(scene);
+        }
     }
 
     @FXML
@@ -85,5 +93,11 @@ public class MainWindowController implements Initializable {
 
     public void logOut(ActionEvent actionEvent) {
         //log out
+        Stage stage = (Stage) logOutButton.getScene().getWindow();
+        try {
+            openButton(stage, "/org/hse/brina/views/sign-in-view.fxml");
+        } catch (IOException e) {
+            logger.error("Scene configuration file not found. " + e.getMessage());
+        }
     }
 }
