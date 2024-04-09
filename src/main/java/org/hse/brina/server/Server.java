@@ -11,8 +11,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.*;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Server {
     private static final Logger logger = LogManager.getLogger();

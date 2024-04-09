@@ -7,8 +7,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
@@ -19,10 +17,7 @@ import org.hse.brina.Main;
 import org.hse.brina.richtext.RichTextDemo;
 
 import java.io.IOException;
-import java.net.Socket;
 import java.net.URL;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -36,10 +31,6 @@ public class MainWindowController implements Initializable {
     @FXML
     public Button logOutButton;
     @FXML
-    private Button Enter;
-    @FXML
-    private TextField EnterIdField;
-    @FXML
     private Button collab;
     @FXML
     private Button create_new;
@@ -50,9 +41,9 @@ public class MainWindowController implements Initializable {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
         Parent sceneLoader = loader.load();
         Scene scene;
-        if(!fxmlView.equals("/org/hse/brina/views/sign-in-view.fxml")) {
+        if (!fxmlView.equals("/org/hse/brina/views/sign-in-view.fxml")) {
             scene = new Scene(sceneLoader, stage.getScene().getWidth(), stage.getScene().getHeight());
-        } else{
+        } else {
             scene = new Scene(sceneLoader, Config.getDefaultWidth(), Config.getDefaultHeight());
         }
         stage.setScene(scene);

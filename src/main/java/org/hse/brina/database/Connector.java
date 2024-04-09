@@ -11,6 +11,7 @@ import java.sql.Statement;
 
 public class Connector {
     private static final Logger logger = LogManager.getLogger();
+
     public static void connect() {
         Connection connector = null;
         try {

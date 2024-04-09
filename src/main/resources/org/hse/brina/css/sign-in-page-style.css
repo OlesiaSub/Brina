@@ -17,7 +17,7 @@
 
 }
 
-.access-button{
+.access-button {
     -fx-background-color: white;
     -fx-text-fill: #3d6dac;
     -fx-font-size: 16px;
@@ -34,7 +34,7 @@
     -fx-text-fill: #101d2f;
 }
 
-.simple-text{
+.simple-text {
     -fx-font-size: 16px;
     -fx-text-fill: #101d2f;
 }
@@ -49,8 +49,8 @@
     -fx-background-color: white;
 }
 
-.login-warning-text{
-    -fx-background-color: #f6ecde ;
+.login-warning-text {
+    -fx-background-color: #f6ecde;
     -fx-border-color: grey;
     -fx-border-width: 1px;
     -fx-background-radius: 8px;
@@ -60,8 +60,8 @@
     -fx-font-weight: lighter;
 }
 
-.password-warning-text{
-    -fx-background-color: #f6ecde ;
+.password-warning-text {
+    -fx-background-color: #f6ecde;
     -fx-border-color: grey;
     -fx-border-width: 1px;
     -fx-text-fill: #e0850c;
@@ -104,4 +104,14 @@
 .eye-button {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
+}
+
+.text-area {
+    -fx-font-size: 16px;
+    -fx-text-fill: #101d2f;
+    /*-fx-border-color: white;*/
+    -fx-alignment: center;
+    -fx-border-color: transparent;
+    -fx-background-color: white;
+
 }

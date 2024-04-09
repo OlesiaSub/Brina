@@ -3,14 +3,21 @@ package org.hse.brina.utils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hse.brina.Config;
@@ -19,16 +26,21 @@ import org.hse.brina.richtext.RichTextDemo;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class CollaborationController {
 
+    private static final Logger logger = LogManager.getLogger();
     public Button Enter;
     @FXML
     public TextField EnterIdField;
     @FXML
     public Button backButton;
-    private static final Logger logger = LogManager.getLogger();
+    @FXML
     public VBox globalVBox;
+    @FXML
+    public VBox IDVBox;
+
 
     private void loadScene(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
@@ -39,25 +51,54 @@ public class CollaborationController {
 
     @FXML
     private void openEnterButton() {
+
         Config.client.sendMessage("openDocumentById " + Config.client.getName() + " " + EnterIdField.getText());
         String response = Config.client.receiveMessage();
         if (response.equals("No such file")) {
-            // net fila po takomu id u etogo usera
-        }
-        String[] responseData = response.split(" ");
-        String filePath = responseData[0];
-        String access = responseData[1];
-        RichTextDemo richTextWindow = new RichTextDemo();
-        richTextWindow.previousView = "/org/hse/brina/views/collaboration-view.fxml";
-        richTextWindow.start((Stage) Enter.getScene().getWindow());
-        File file = new File(filePath);
-        if (file.exists()) richTextWindow.loadRTFX(file);
+            Stage popupStage = new Stage();
+            popupStage.initOwner(Enter.getScene().getWindow());
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+            int stageHeight = 100;
+            int stageWidth = 200;
+            VBox vbox = new VBox();
+            Text text = new Text("No such file is found");
+            text.setStyle("-fx-font-size: 16 px");
+            text.setFill(Color.BLACK);
+            text.setTextAlignment(TextAlignment.CENTER);
+            vbox.setAlignment(Pos.CENTER);
+            vbox.getChildren().addAll(text);
+            vbox.setStyle("-fx-background-color: white;");
+            vbox.setPrefWidth(200);
+            vbox.setPrefHeight(100);
+            vbox.setMaxWidth(200);
+            vbox.setMaxHeight(100);
 
-        Stage stage = (Stage) Enter.getScene().getWindow();
-        try {
-            loadScene(stage, "/org/hse/brina/views/collaboration-entered-view.fxml");
-        } catch (IOException e) {
-            logger.error("Scene configuration file not found. " + e.getMessage());
+            Scene scene = new Scene(vbox, stageWidth, stageHeight);
+            popupStage.setScene(scene);
+            if (Enter.getScene() != null) {
+                Window previousWindow = Enter.getScene().getWindow();
+                double centerX = previousWindow.getX() + (previousWindow.getWidth() - stageWidth) / 2;
+                double centerY = previousWindow.getY() + (previousWindow.getHeight() - stageHeight) / 2;
+                popupStage.setX(centerX);
+                popupStage.setY(centerY);
+            }
+            try (InputStream iconStream = getClass().getResourceAsStream("/org/hse/brina/assets/small-icon.png")) {
+                Image icon = new Image(iconStream);
+                popupStage.getIcons().add(icon);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
+            popupStage.setResizable(false);
+            popupStage.showAndWait();
+        } else {
+            String[] responseData = response.split(" ");
+            String filePath = responseData[0];
+//            String access = responseData[1];
+            RichTextDemo richTextWindow = new RichTextDemo();
+            richTextWindow.previousView = "/org/hse/brina/views/collaboration-view.fxml";
+            richTextWindow.start((Stage) Enter.getScene().getWindow());
+            File file = new File(filePath);
+            if (file.exists()) richTextWindow.loadRTFX(file);
         }
     }
 
@@ -72,8 +113,10 @@ public class CollaborationController {
     }
 
     @FXML
-    void initialize(){
+    void initialize() {
         HBox.setHgrow(globalVBox, Priority.ALWAYS);
         VBox.setVgrow(globalVBox, Priority.ALWAYS);
+        HBox.setHgrow(IDVBox, Priority.ALWAYS);
+        VBox.setVgrow(IDVBox, Priority.ALWAYS);
     }
 }

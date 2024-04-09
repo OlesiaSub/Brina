@@ -7,9 +7,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -20,22 +17,26 @@ import org.hse.brina.Config;
 import org.hse.brina.Main;
 import org.hse.brina.richtext.RichTextDemo;
 
-import javax.print.Doc;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
 public class ProjectsController implements Initializable {
+    private static final Logger logger = LogManager.getLogger();
     @FXML
     public VBox documentList;
     @FXML
     public Button backButton;
+    @FXML
     public HBox labelsHBox;
+    @FXML
     public VBox documentVBox;
+    @FXML
     public VBox globalVBox;
+    @FXML
+    public HBox gHBox;
     private Map<String, String> userDocumentsMap;
-    private static final Logger logger = LogManager.getLogger();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -44,25 +45,26 @@ public class ProjectsController implements Initializable {
         VBox.setVgrow(documentVBox, Priority.ALWAYS);
         VBox.setVgrow(documentList, Priority.ALWAYS);
         VBox.setVgrow(globalVBox, Priority.ALWAYS);
+        HBox.setHgrow(gHBox, Priority.ALWAYS);
         List<Document> documents = new ArrayList<>(documents());
-        for(int i = 0; i < documents.size(); i ++){
+        for (Document document : documents) {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/hse/brina/views/document-list-item-view.fxml"));
             try {
                 HBox documentHBox = loader.load();
                 DocumentListItemController controller = loader.getController();
-                controller.setData(documents.get(i));
+                controller.setData(document);
                 controller.nameHBox.setOnMouseClicked(event -> {
                     String key = controller.documentName.getText();
                     String value = userDocumentsMap.get(key);
-                    if(key != null && value!= null && !(Objects.equals(key, " ") || key.isEmpty()) && !(Objects.equals(value, " ") || value.isEmpty())) {
+                    if (key != null && value != null && !(Objects.equals(key, " ") || key.isEmpty()) && !(Objects.equals(value, " ") || value.isEmpty())) {
                         RichTextDemo richTextWindow = new RichTextDemo();
                         richTextWindow.previousView = "/org/hse/brina/views/projects-view.fxml";
                         richTextWindow.start((Stage) documentList.getScene().getWindow());
                         File file = new File(value);
-                        if (file.exists()) richTextWindow.loadRTFX(new File(value)); //если это файл пользователя
-                        //если это файл другого пользователя, то ввод ключа на совместное редактирование
+                        if (file.exists()) {
+                            richTextWindow.loadRTFX(file);
+                        }
                     }
-                    System.out.println("Выполняется действие при нажатии на nameHBox");
                 });
                 documentList.getChildren().add(documentHBox);
             } catch (IOException e) {
@@ -71,8 +73,8 @@ public class ProjectsController implements Initializable {
         }
     }
 
-    public List<Document> documents(){
-        List<Document> documentsList = new ArrayList<Document>();
+    public List<Document> documents() {
+        List<Document> documentsList = new ArrayList<>();
         String username = Config.client.getName();
         Config.client.sendMessage("getDocuments " + username);
         String response = Config.client.receiveMessage();
@@ -83,7 +85,7 @@ public class ProjectsController implements Initializable {
         }
         ArrayList<String> keySet = new ArrayList<>(userDocumentsMap.keySet());
         for (String s : keySet) {
-            Document document = new Document(s, Document.STATUS.UNLOCKED);
+            Document document = new Document(s.substring(0, 1), s.substring(1), Document.STATUS.UNLOCKED);
             documentsList.add(document);
         }
         return documentsList;
@@ -97,6 +99,7 @@ public class ProjectsController implements Initializable {
             logger.error("Scene configuration file not found. " + e.getMessage());
         }
     }
+
     private void loadScene(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
         Parent logInLoader = loader.load();

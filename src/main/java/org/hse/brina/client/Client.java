@@ -60,10 +60,11 @@ public class Client {
         }
     }
 
-    public void setName(String name) {
-        this.username = name;
-    }
     public String getName() {
         return username;
+    }
+
+    public void setName(String name) {
+        this.username = name;
     }
 }

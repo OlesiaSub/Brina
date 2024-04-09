@@ -9,6 +9,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class DocumentListItemController implements Initializable {
@@ -20,12 +21,19 @@ public class DocumentListItemController implements Initializable {
     public HBox nameHBox;
     @FXML
     public HBox globalHBox;
+    @FXML
+    public Text accessText;
 
-    public void setData(Document document){
+    public void setData(Document document) {
         documentName.setText(document.getName());
-//        statusImage.setImage(new Image(String.valueOf(getClass().getResourceAsStream(document.getImage()))));
         HBox.setHgrow(nameHBox, Priority.ALWAYS);
         HBox.setHgrow(globalHBox, Priority.ALWAYS);
+        document.setStatus("unlocked");
+        if (document.getAccess().equals("r")) {
+            accessText.setText("reader");
+            Image lockedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/hse/brina/assets/locked.png")));
+            statusImage.setImage(lockedImage);
+        }
     }
 
     @Override

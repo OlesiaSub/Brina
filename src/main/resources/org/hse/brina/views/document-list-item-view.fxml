@@ -1,42 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
-<HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="40.0"
-      xmlns="http://javafx.com/javafx/17.0.2-ea"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.hse.brina.utils.DocumentListItemController"
-      fx:id="globalHBox">
-   <children>
-      <HBox fx:id = "nameHBox" alignment="CENTER_LEFT" prefHeight="55.0" prefWidth="552.0">
-         <children>
-            <Text fx:id="documentName" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-fill: #101d2f;" text="Document Name">
-               <font>
-                  <Font name="Baskerville Old Face" size="16.0" />
-               </font>
-            </Text>
-         </children>
-         <opaqueInsets>
-            <Insets left="10.0" />
-         </opaqueInsets>
-      </HBox>
-      <Separator orientation="VERTICAL" prefHeight="55.0" prefWidth="5.0" />
-      <HBox alignment="CENTER" prefHeight="55.0" prefWidth="37.0">
-         <children>
-            <ImageView fx:id="statusImage" fitHeight="25" fitWidth="25" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../assets/unlocked.png" />
-               </image>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<HBox xmlns:fx="http://javafx.com/fxml/1" fx:id="globalHBox" alignment="CENTER_LEFT" maxHeight="40.0"
+      prefHeight="40.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
+      fx:controller="org.hse.brina.utils.DocumentListItemController">
+    <opaqueInsets>
+        <Insets bottom="10" left="10" right="10" top="10"/>
+    </opaqueInsets>
+    <HBox fx:id="nameHBox" alignment="CENTER_LEFT" maxWidth="Infinity" prefHeight="55.0" prefWidth="550.0">
+        <opaqueInsets>
+            <Insets left="10.0"/>
+        </opaqueInsets>
+        <Text fx:id="documentName" fill="#101d2f" strokeType="OUTSIDE" strokeWidth="0.0"
+              style="-fx-text-fill: #101d2f; -fx-padding: 10px;" text=" Document Name">
+            <font>
+                <Font name="Baskerville Old Face" size="16.0"/>
+            </font>
+        </Text>
+    </HBox>
+    <Separator orientation="VERTICAL" prefHeight="55.0" prefWidth="5.0"/>
+    <HBox alignment="CENTER" layoutX="574.0" layoutY="10.0" prefHeight="55.0" prefWidth="80" minWidth="70">
+        <Text fx:id="accessText" fill="#101d2f" text="writer">
+            <font>
+                <Font name="Baskerville Old Face" size="16.0"/>
+            </font>
+        </Text>
+    </HBox>
+    <Separator orientation="VERTICAL" prefHeight="55.0" prefWidth="5.0"/>
+    <HBox alignment="CENTER" prefHeight="55.0" prefWidth="80.0" minWidth="70">
+        <VBox alignment="CENTER" prefWidth="80.0" minWidth="70">
+            <ImageView fx:id="statusImage" fitHeight="25" pickOnBounds="true" preserveRatio="true">
+                <Image url="@../assets/unlocked.png"/>
             </ImageView>
-         </children>
-      </HBox>
-   </children>
-   <opaqueInsets>
-      <Insets left="10.0" />
-   </opaqueInsets>
+        </VBox>
+    </HBox>
 </HBox>

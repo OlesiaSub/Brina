@@ -26,7 +26,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.stage.*;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -47,7 +50,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -64,14 +66,10 @@ public class RichTextDemo extends Application {
     public final FoldableStyledArea area = new FoldableStyledArea();
     public final SuspendableNo updatingToolbar = new SuspendableNo();
     public String previousView = "/org/hse/brina/views/main-window-view.fxml";
-
-    private StringBuilder documentId = new StringBuilder();
-
-    private TextField documentNameField = new TextField();
-
-    private Scene mainScene;
-
     public Stage mainStage;
+    private StringBuilder documentId = new StringBuilder();
+    private TextField documentNameField = new TextField();
+    private Scene mainScene;
 
     {
         area.setWrapText(true);
@@ -115,7 +113,7 @@ public class RichTextDemo extends Application {
             imageView = new ImageView(image);
             imageView.setFitHeight(60);
             imageView.setFitWidth(60);
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
 
@@ -454,6 +452,8 @@ public class RichTextDemo extends Application {
         shareVBox.setMaxWidth(265);
         shareVBox.setMaxHeight(30);
         shareVBox.setAlignment(Pos.CENTER);
+        shareVBox.setSpacing(10);
+        shareVBox.setPadding(new Insets(0, 0, 10, 0));
 
         VBox buttonsVBox = new VBox();
         buttonsVBox.setAlignment(Pos.CENTER);
@@ -462,18 +462,60 @@ public class RichTextDemo extends Application {
         keyButton.getStyleClass().add("dark-button");
         keyButton.setPrefWidth(265);
         keyButton.setAlignment(Pos.CENTER);
+        TextArea IDArea = new TextArea();
+        VBox popupLayout = new VBox(nameHBox, usersTextField, accessText, buttonsVBox, keyButton);
+        popupLayout.setAlignment(Pos.CENTER);
+        popupLayout.getStyleClass().add("white-box");
+        popupLayout.setSpacing(10);
         keyButton.setOnAction(event -> {
             shareVBox.getChildren().clear();
-            if(!usersTextField.getText().equals("")){
-                int ID = Math.abs(documentNameTextField.getText().hashCode());
+            if (!usersTextField.getText().isEmpty()) {
+                Stage IDStage = new Stage();
+                IDStage.initOwner(popupStage);
+                IDStage.initModality(Modality.APPLICATION_MODAL);
+
+                int ID = documentNameTextField.getText().hashCode();
                 documentId.replace(0, documentId.length(), Integer.toString(ID));
-                Text shareText = new Text(usersTextField.getText() + " now has the access by the key: " + ID);
+                Text shareText = new Text(usersTextField.getText() + " now has the access by the key: ");
                 shareText.setStyle("-fx-font-size: 14 px");
                 shareText.setFill(Color.BLACK);
                 shareText.setTextAlignment(TextAlignment.CENTER);
-                shareVBox.getChildren().add(shareText);
-                //            сохранение ключа в БД
-//            usersTextField.getText(), rights, documentNameTextField.getText() -- имя пользователя, для кого есть доступ; права доступа; имя документа
+                IDArea.setText(Integer.toString(Math.abs(ID)));
+                IDArea.setPrefColumnCount(1);
+                IDArea.setPrefRowCount(1);
+                IDArea.setPrefWidth(265);
+                IDArea.setMaxWidth(265);
+                IDArea.setPrefHeight(20);
+                IDArea.setMaxHeight(20);
+                IDArea.setEditable(false);
+                IDArea.setStyle("-fx-font-size: 16px");
+                IDArea.getStyleClass().add("text-area");
+                shareVBox.getChildren().addAll(shareText, IDArea);
+
+                VBox globalVBox = new VBox(shareVBox);
+                globalVBox.setAlignment(Pos.CENTER);
+                globalVBox.getStyleClass().add("white-box");
+                globalVBox.setSpacing(10);
+                int smallStageHeight = 85;
+                int smallStageWidth = 310;
+                Scene smallScene = new Scene(globalVBox, smallStageWidth, smallStageHeight);
+                smallScene.getStylesheets().add("/org/hse/brina/css/sign-in-page-style.css");
+                IDStage.setScene(smallScene);
+                if (mainScene != null) {
+                    Window previousWindow = mainScene.getWindow();
+                    double centerX = previousWindow.getX() + (previousWindow.getWidth() - smallStageWidth) / 2;
+                    double centerY = previousWindow.getY() + (previousWindow.getHeight() - smallStageHeight) / 2;
+                    IDStage.setX(centerX);
+                    IDStage.setY(centerY);
+                }
+                try (InputStream iconStream = getClass().getResourceAsStream("/org/hse/brina/assets/small-icon.png")) {
+                    Image icon = new Image(iconStream);
+                    IDStage.getIcons().add(icon);
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                }
+                IDStage.setResizable(false);
+                IDStage.showAndWait();
                 Config.client.sendMessage("addDocumentById " + usersTextField.getText() + " " + documentNameTextField.getText() + " " + rights);
             }
         });
@@ -481,10 +523,6 @@ public class RichTextDemo extends Application {
         buttonsVBox.getChildren().addAll(rightsHBox, keyButton);
         buttonsVBox.setSpacing(10);
         buttonsVBox.getStyleClass().add("white-box");
-        VBox popupLayout = new VBox(nameHBox, usersTextField, accessText, buttonsVBox, keyButton, shareVBox);
-        popupLayout.setAlignment(Pos.CENTER);
-        popupLayout.getStyleClass().add("white-box");
-        popupLayout.setSpacing(10);
         int stageHeight = 250;
         int stageWidth = 310;
         Scene popupScene = new Scene(popupLayout, stageWidth, stageHeight);
@@ -504,7 +542,7 @@ public class RichTextDemo extends Application {
             logger.error(e.getMessage());
         }
         popupStage.setOnHidden(event -> {
-            if(!documentNameTextField.getText().contentEquals(documentName.getText())) {
+            if (!documentNameTextField.getText().contentEquals(documentName.getText())) {
                 documentName.setText(documentNameTextField.getText());
                 //обновить имя в БД
             }
@@ -583,8 +621,7 @@ public class RichTextDemo extends Application {
         fileChooser.setInitialDirectory(new File(initialDir));
 
         setExtensions(fileChooser);
-        FileChooser.ExtensionFilter rtfxExtension = new FileChooser.ExtensionFilter("RTFX Files (*.rtfx)", "*.rtfx");
-        fileChooser.setSelectedExtensionFilter(rtfxExtension);
+        fileChooser.setSelectedExtensionFilter(fileChooser.getExtensionFilters().get(0));
         File selectedFile = fileChooser.showOpenDialog(mainStage);
         if (selectedFile != null) {
             area.clear();
@@ -622,8 +659,8 @@ public class RichTextDemo extends Application {
                 content.append(line).append("\n");
             }
             area.replaceText(String.valueOf(content));
-            String textContent = content.toString();
-            System.out.println(textContent);
+            String name = file.toPath().getFileName().toString().replace(".rtfx", "");
+            documentNameField.setText(name);
         } catch (IOException e) {
             logger.error("Error while loading TXT file: " + e.getMessage());
         }
@@ -643,6 +680,8 @@ public class RichTextDemo extends Application {
                 if (doc != null) {
                     area.replaceSelection(doc);
                 }
+                String name = file.toPath().getFileName().toString().replace(".rtfx", "");
+                documentNameField.setText(name);
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
@@ -670,14 +709,14 @@ public class RichTextDemo extends Application {
                 case "pdf" -> saveInPDFFormat(selectedFile);
                 case "docx" -> saveInDOCXFormat(selectedFile);
             }
+            String name = fileName.replace("." + fileExtension, "");
+            documentNameField.setText(name);
             try {
                 Files.copy(filePath, newPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 logger.error("Error while saving to Documents folder " + e.getMessage());
             }
-            String name = fileName.replace("." + fileExtension, "");
             Config.client.sendMessage("saveDocument " + fileName + " " + Config.client.getName() + " " + name);
-            logger.info("i tryed to save " + name);
         }
     }
 
@@ -711,7 +750,7 @@ public class RichTextDemo extends Application {
                 codec.encode(dos, doc);
                 fos.close();
             } catch (IOException e) {
-                logger.error("Error while saving the file in RTFX format"+e.getMessage());
+                logger.error("Error while saving the file in RTFX format" + e.getMessage());
             }
         });
     }

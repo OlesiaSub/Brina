@@ -1,36 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
-<VBox alignment="CENTER" spacing="10" style="-fx-background-color: white" stylesheets="@../css/main-page-style.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.hse.brina.utils.ProjectsController" fx:id="globalVBox">
-    <HBox alignment="CENTER" prefHeight="36.0" spacing="10">
-        <Button fx:id="backButton" alignment="TOP_LEFT" onAction="#backButtonClicked" prefHeight="25" prefWidth="25" styleClass="back" />
-      <HBox fx:id="labelsHBox" alignment="CENTER" style="-fx-spacing: 10;">
-         <children>
-              <Text style="-fx-text-fill: #101d2f ; -fx-font-size: 16px; -fx-alignment: right" text="Documents" textAlignment="CENTER" wrappingWidth="194.45314049720764">
-               <font>
-                  <Font name="Baskerville Old Face" size="16.0" />
-               </font>
-            </Text>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-fill: #101d2f; -fx-font-size: 16px; -fx-alignment: right;" text="Status" textAlignment="RIGHT">
-               <font>
-                  <Font name="Baskerville Old Face" size="16.0" />
-               </font>
-            </Text>
-         </children>
-         <opaqueInsets>
-            <Insets top="10.0" />
-         </opaqueInsets>
-      </HBox>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="globalVBox" alignment="TOP_CENTER" maxWidth="Infinity" spacing="10"
+      style="-fx-background-color: white" stylesheets="@../css/main-page-style.css"
+      xmlns="http://javafx.com/javafx/17.0.2-ea" fx:controller="org.hse.brina.utils.ProjectsController">
+    <HBox fx:id="gHBox" maxWidth="Infinity" spacing="10">
+        <HBox fx:id="labelsHBox" alignment="CENTER" maxWidth="Infinity" prefHeight="35.0" style="-fx-spacing: 10;">
+            <opaqueInsets>
+                <Insets top="10.0"/>
+            </opaqueInsets>
+            <HBox alignment="CENTER" prefWidth="45">
+                <Button fx:id="backButton" alignment="TOP_LEFT" onAction="#backButtonClicked" prefHeight="25"
+                        prefWidth="25" styleClass="back">
+                </Button>
+            </HBox>
+            <HBox alignment="CENTER" maxWidth="Infinity" prefWidth="426">
+                <Text style="-fx-text-fill: #101d2f ; -fx-font-size: 16px; -fx-alignment: right" text="Documents"
+                      textAlignment="CENTER">
+                    <font>
+                        <Font name="Baskerville Old Face" size="16.0"/>
+                    </font>
+                </Text>
+            </HBox>
+            <HBox alignment="CENTER" minWidth="70" prefHeight="35.0" prefWidth="70.0" maxWidth="Infinity">
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-text-fill: #101d2f;" text="Access">
+                    <font>
+                        <Font name="Baskerville Old Face" size="16.0"/>
+                    </font>
+                </Text>
+            </HBox>
+            <HBox alignment="CENTER" minWidth="70" prefHeight="35.0" prefWidth="70.0" maxWidth="Infinity">
+                <Text strokeType="OUTSIDE" strokeWidth="0.0"
+                      style="-fx-text-fill: #101d2f; -fx-font-size: 16px; -fx-alignment: right;" text="Status"
+                      textAlignment="RIGHT">
+                    <font>
+                        <Font name="Baskerville Old Face" size="16.0"/>
+                    </font>
+                </Text>
+            </HBox>
+        </HBox>
     </HBox>
-   <Separator prefWidth="200.0" />
-   <VBox fx:id="documentVBox" >
-      <children>
-          <VBox fx:id="documentList" >
+    <Separator prefWidth="200.0"/>
+    <VBox fx:id="documentVBox">
+        <VBox fx:id="documentList">
+        </VBox>
     </VBox>
-      </children>
-   </VBox>
 </VBox>
