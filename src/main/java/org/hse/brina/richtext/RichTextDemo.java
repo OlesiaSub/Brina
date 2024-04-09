@@ -434,12 +434,12 @@ public class RichTextDemo extends Application {
         StringBuilder rights = new StringBuilder();
         readerButton.setOnAction(event -> {
             editorButton.setStyle("-fx-background-color: white; -fx-text-fill: #3d6dac; -fx-border-color: #3d6dac;");
-            rights.replace(0, rights.length(), "reader");
+            rights.replace(0, rights.length(), "r");
             readerButton.setStyle("-fx-background-color: #e0850c; -fx-text-fill: #101d2f; -fx-border-color: #101d2f;");
         });
         editorButton.setOnAction(event -> {
             readerButton.setStyle("-fx-background-color: white; -fx-text-fill: #3d6dac; -fx-border-color: #3d6dac;");
-            rights.replace(0, rights.length(), "editor");
+            rights.replace(0, rights.length(), "w");
             editorButton.setStyle("-fx-background-color: #e0850c; -fx-text-fill: #101d2f; -fx-border-color: #101d2f;");
         });
         HBox rightsHBox = new HBox();
@@ -448,26 +448,40 @@ public class RichTextDemo extends Application {
         rightsHBox.getChildren().addAll(readerButton, editorButton);
         rightsHBox.getStyleClass().add("white-box");
 
+        VBox shareVBox = new VBox();
+        shareVBox.setPrefWidth(265);
+        shareVBox.setPrefHeight(30);
+        shareVBox.setMaxWidth(265);
+        shareVBox.setMaxHeight(30);
+        shareVBox.setAlignment(Pos.CENTER);
+
         VBox buttonsVBox = new VBox();
         buttonsVBox.setAlignment(Pos.CENTER);
         Button keyButton = new Button();
-        keyButton.setText("Copy Access Key");
+        keyButton.setText("Share access");
         keyButton.getStyleClass().add("dark-button");
         keyButton.setPrefWidth(265);
         keyButton.setAlignment(Pos.CENTER);
         keyButton.setOnAction(event -> {
-                    //пока randomID есть в таблице генерируем новый ключ :
-//            while(...) {
-//                  String randomID = generateID(); -- генератор случайных чисел написан
-//                }
-//            documentIdName.replace(0, documentIdName.length(), randomID);
-//            сохранение ключа в БД
+            shareVBox.getChildren().clear();
+            if(!usersTextField.getText().equals("")){
+                int ID = Math.abs(documentNameTextField.getText().hashCode());
+                documentId.replace(0, documentId.length(), Integer.toString(ID));
+                Text shareText = new Text(usersTextField.getText() + " now has the access by the key: " + ID);
+                shareText.setStyle("-fx-font-size: 14 px");
+                shareText.setFill(Color.BLACK);
+                shareText.setTextAlignment(TextAlignment.CENTER);
+                shareVBox.getChildren().add(shareText);
+                //            сохранение ключа в БД
 //            usersTextField.getText(), rights, documentNameTextField.getText() -- имя пользователя, для кого есть доступ; права доступа; имя документа
+                Config.client.sendMessage("addDocumentById " + usersTextField.getText() + " " + documentNameTextField.getText() + " " + rights);
+            }
         });
+
         buttonsVBox.getChildren().addAll(rightsHBox, keyButton);
         buttonsVBox.setSpacing(10);
         buttonsVBox.getStyleClass().add("white-box");
-        VBox popupLayout = new VBox(nameHBox, usersTextField, accessText, buttonsVBox, keyButton);
+        VBox popupLayout = new VBox(nameHBox, usersTextField, accessText, buttonsVBox, keyButton, shareVBox);
         popupLayout.setAlignment(Pos.CENTER);
         popupLayout.getStyleClass().add("white-box");
         popupLayout.setSpacing(10);
@@ -495,19 +509,8 @@ public class RichTextDemo extends Application {
                 //обновить имя в БД
             }
         });
+        popupStage.setResizable(false);
         popupStage.showAndWait();
-    }
-
-    private String generateID() {
-        StringBuilder strKey = new StringBuilder();
-        Random random = new Random();
-
-        for (int i = 0; i < 13; i++) {
-            int digit = random.nextInt(10);
-            strKey.append(digit);
-        }
-
-        return strKey.toString();
     }
 
     public Button createButton(String styleClass, Runnable action, String toolTip) {
@@ -672,7 +675,9 @@ public class RichTextDemo extends Application {
             } catch (IOException e) {
                 logger.error("Error while saving to Documents folder " + e.getMessage());
             }
-            Config.client.sendMessage("saveDocument " + fileName + " " + Config.client.getName());
+            String name = fileName.replace("." + fileExtension, "");
+            Config.client.sendMessage("saveDocument " + fileName + " " + Config.client.getName() + " " + name);
+            logger.info("i tryed to save " + name);
         }
     }
 

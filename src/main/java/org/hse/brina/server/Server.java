@@ -128,11 +128,32 @@ public class Server {
                         }
                     } else if (inputLine.startsWith("saveDocument")) {
                         String[] userData = inputLine.split(" ");
-                        if (userData.length == 3) {
-                            String fileName = userData[1];
+                        if (userData.length == 4) {
+                            String filename = userData[1];
                             String username = userData[2];
-                            addDocument(fileName, username);
+                            String name = userData[3];
+                            addDocument(filename, username, name);
                             out.println("Document saved");
+                        } else {
+                            out.println("Invalid command format");
+                        }
+                    } else if (inputLine.startsWith("openDocumentById")) {
+                        String[] userData = inputLine.split(" ");
+                        if (userData.length == 3) {
+                            String username = userData[1];
+                            int fileId = Integer.parseInt(userData[2]);
+                            String response = checkAndUpdateFileLock(username, fileId);
+                            out.println(response);
+                        } else {
+                            out.println("Invalid command format");
+                        }
+                    } else if (inputLine.startsWith("addDocumentById")) {
+                        String[] userData = inputLine.split(" ");
+                        if (userData.length == 4) {
+                            String username = userData[1];
+                            String filename = userData[2];
+                            String access = userData[3];
+                            saveDocumentById(username, filename, access);
                         } else {
                             out.println("Invalid command format");
                         }
@@ -165,19 +186,63 @@ public class Server {
             }
         }
 
-        private void addDocument(String filename, String username) {
-            String sql = "INSERT INTO user_documents (username, filename, file_path, access, lock) VALUES (?, ?, ?, ?, ?)";
+        private void addDocument(String filename, String username, String name) {
+            String sql = "INSERT INTO user_documents (username, filename, file_path, file_id, access, lock) VALUES (?, ?, ?, ?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, username);
                 statement.setString(2, filename);
                 statement.setString(3, Config.getProjectPath().substring(0, Config.getProjectPath().length() - 19) + "documents/" + filename);
-                statement.setString(4, "w");
-                statement.setInt(5, 0);
+                statement.setInt(4, Math.abs(name.hashCode()));
+                statement.setString(5, "w");
+                statement.setInt(6, 0);
                 statement.executeUpdate();
-                logger.info("User added into db");
+                logger.info("Document added into db");
             } catch (SQLException e) {
                 logger.error(e.getMessage());
             }
+        }
+
+        private void saveDocumentById(String username, String filename, String access) {
+            String sql = "INSERT INTO user_documents (username, filename, file_path, file_id, access, lock) VALUES (?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, username);
+                String documentName = filename + ".rtfx";
+                statement.setString(2, documentName);
+                statement.setString(3, Config.getProjectPath().substring(0, Config.getProjectPath().length() - 19) + "documents/" + documentName);
+                statement.setInt(4, Math.abs(filename.hashCode()));
+                statement.setString(5, access);
+                statement.setInt(6, 0);
+                statement.executeUpdate();
+                logger.info(documentName + " added into db for " + username);
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+            }
+        }
+
+        public String checkAndUpdateFileLock(String username, int fileId) {
+            String selectQuery = "SELECT file_path, access FROM user_documents WHERE username = ? AND file_id = ?";
+            String updateQuery = "UPDATE user_documents SET lock = 1 WHERE username = ? AND file_id = ?";
+
+            try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
+                 PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
+
+                selectStatement.setString(1, username);
+                selectStatement.setInt(2, fileId);
+                ResultSet resultSet = selectStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    String filePath = resultSet.getString("file_path");
+                    String access = resultSet.getString("access");
+                    updateStatement.setString(1, username);
+                    updateStatement.setInt(2, fileId);
+                    updateStatement.executeUpdate();
+
+                    return filePath + " " + access;
+                }
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+            }
+            return "No such file";
         }
 
         private boolean checkPassword(String username, String password) {
@@ -209,14 +274,15 @@ public class Server {
 
         private Map<String, String> getUserDocuments(String username) {
             Map<String, String> documentsMap = new HashMap<>();
-            String sql = "SELECT filename, file_path FROM user_documents WHERE username = ?";
+            String sql = "SELECT filename, file_path, access FROM user_documents WHERE username = ?";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, username);
                 ResultSet resultSet = statement.executeQuery();
                 while (resultSet.next()) {
                     String filename = resultSet.getString("filename");
                     String filePath = resultSet.getString("file_path");
-                    documentsMap.put(filename, filePath);
+                    String access = resultSet.getString("access");
+                    documentsMap.put(access + filename, filePath);
                 }
             } catch (SQLException e) {
                 logger.error(e.getMessage());

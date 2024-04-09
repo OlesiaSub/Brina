@@ -29,9 +29,9 @@ public class Connector {
                     "username TEXT NOT NULL," +
                     "filename TEXT NOT NULL," +
                     "file_path TEXT NOT NULL," +
-                    "access CHAR(1)," +
-                    "lock INTEGER," +
-                    "PRIMARY KEY (username, filename)" +
+                    "file_id INTEGER," +
+                    "access TEXT NOT NULL," +
+                    "lock INTEGER" +
                     ")";
             statement.executeUpdate(sql);
             logger.info("Tables has been created");

@@ -17,6 +17,7 @@ import org.hse.brina.Config;
 import org.hse.brina.Main;
 import org.hse.brina.richtext.RichTextDemo;
 
+import java.io.File;
 import java.io.IOException;
 
 public class CollaborationController {
@@ -38,10 +39,26 @@ public class CollaborationController {
 
     @FXML
     private void openEnterButton() {
-        Stage stage = (Stage) Enter.getScene().getWindow();
+        Config.client.sendMessage("openDocumentById " + Config.client.getName() + " " + EnterIdField.getText());
+        String response = Config.client.receiveMessage();
+        if (response.equals("No such file")) {
+            // net fila po takomu id u etogo usera
+        }
+        String[] responseData = response.split(" ");
+        String filePath = responseData[0];
+        String access = responseData[1];
         RichTextDemo richTextWindow = new RichTextDemo();
         richTextWindow.previousView = "/org/hse/brina/views/collaboration-view.fxml";
-        richTextWindow.start(stage);
+        richTextWindow.start((Stage) Enter.getScene().getWindow());
+        File file = new File(filePath);
+        if (file.exists()) richTextWindow.loadRTFX(file);
+
+        Stage stage = (Stage) Enter.getScene().getWindow();
+        try {
+            loadScene(stage, "/org/hse/brina/views/collaboration-entered-view.fxml");
+        } catch (IOException e) {
+            logger.error("Scene configuration file not found. " + e.getMessage());
+        }
     }
 
     @FXML

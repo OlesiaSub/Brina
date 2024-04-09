@@ -19,6 +19,7 @@ import org.hse.brina.Main;
 import org.hse.brina.richtext.RichTextDemo;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -92,7 +93,6 @@ public class MainWindowController implements Initializable {
     }
 
     public void logOut(ActionEvent actionEvent) {
-        //log out
         Stage stage = (Stage) logOutButton.getScene().getWindow();
         try {
             openButton(stage, "/org/hse/brina/views/sign-in-view.fxml");
