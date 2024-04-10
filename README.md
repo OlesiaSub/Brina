@@ -30,14 +30,13 @@ Modify options —> Add VM options: `--module-path "path\openjfx-17.0.10_windows
 
 - запускаем `Server.java`, далее `Main.java` (Main, который настоили)
 
-при запуске в первый раз попросит ввести путь до базы данных - надо вставить абсолютный путь до файла `Text-Editor-with-AI/database/database.db`
-
 ### Текущий вид приложения
 
 | | |
 |---|---|
 | <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/cf516f22-2380-4fa0-a820-64e6cd8436b6" alt="sign-in" width="447" height="319"> | <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/9c08785a-ee25-4cfd-9d7a-912c0035ba38" alt="sign-up" width="447" height="319"> |
-| <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/cb459d13-a22a-4326-837a-5c286ef02602" alt="main-window" width="447" height="319"> | <img src="https://github.com/B-E-D-A/Text-Editor-with-AI/assets/112130616/b50afed6-8ece-4e93-888f-66563fa629ba" alt="editor" width="447" height="319"> |
+| <img src="https://github.com/B-E-D-A/Brina/assets/112130616/20e3bca7-df05-4a18-99da-c8084cd39b63" alt="main-window" width="447" height="319"> | <img src="https://github.com/B-E-D-A/Brina/assets/112130616/2ac05c89-b82c-457a-abb2-976cba79266b" alt="editor" width="447" height="319"> |
+| <img src="https://github.com/B-E-D-A/Brina/assets/112130616/e5c83c54-df33-45d8-9eec-db1d37ee05a5" alt="main-window" width="447" height="465"> | <img src="https://github.com/B-E-D-A/Brina/assets/112130616/f4cedf9c-457b-4875-b5a0-924faba15ae5" alt="editor" width="447" height="300"> |
 
 Палитра:
 
