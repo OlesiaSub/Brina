@@ -55,7 +55,7 @@ public class ProjectsController implements Initializable {
                 controller.setData(document);
                 controller.nameHBox.setOnMouseClicked(event -> {
                     String key = controller.documentName.getText();
-                    String value = userDocumentsMap.get(key);
+                    String value = userDocumentsMap.get("w"+key);
                     if (key != null && value != null && !(Objects.equals(key, " ") || key.isEmpty()) && !(Objects.equals(value, " ") || value.isEmpty())) {
                         RichTextDemo richTextWindow = new RichTextDemo();
                         richTextWindow.previousView = "/org/hse/brina/views/projects-view.fxml";
