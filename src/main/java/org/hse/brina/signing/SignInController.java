@@ -20,6 +20,9 @@ import org.hse.brina.Main;
 import org.hse.brina.client.Client;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 /**
@@ -103,7 +106,7 @@ public class SignInController {
         String username = loginField.getText();
         String password = passwordField.getText();
         Config.client.setName(username);
-        Config.client.sendMessage("signInUser " + username + " " + password);
+        Config.client.sendMessage("signInUser " + username + " " + getHash(password + password.hashCode()));
         String response = Config.client.receiveMessage();
         if (response.equals("User with this name not found")) {
             invalidLoginField.setText("User with this name doesn't exist");
@@ -154,7 +157,24 @@ public class SignInController {
         passwordVisible = !passwordVisible;
     }
 
-    protected void setEyeButtonAction(){
+    private static String getHash(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            logger.info("Unable to hash password");
+            return null;
+        }
+    }
+
+    protected void setEyeButtonAction() {
         eyeButton.setOnAction(event -> {
             if (!passwordVisible) {
                 changePasswordVisibility(eyeOpenImage, passwordField, openedPasswordField);

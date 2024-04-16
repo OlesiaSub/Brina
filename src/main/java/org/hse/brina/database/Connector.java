@@ -23,6 +23,7 @@ public class Connector {
             String sql = "CREATE TABLE IF NOT EXISTS users (" +
                     "username TEXT NOT NULL," +
                     "password TEXT NOT NULL" +
+                    "password_salt TEXT NOT NULL" +
                     ")";
             Statement statement = connector.createStatement();
             statement.executeUpdate(sql);

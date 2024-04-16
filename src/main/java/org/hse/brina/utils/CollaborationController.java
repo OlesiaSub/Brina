@@ -51,8 +51,8 @@ public class CollaborationController {
 
     @FXML
     private void openEnterButton() {
-
-        Config.client.sendMessage("openDocumentById " + Config.client.getName() + " " + EnterIdField.getText());
+        String id = EnterIdField.getText();
+        Config.client.sendMessage("openDocumentById " + Config.client.getName() + " " + id);
         String response = Config.client.receiveMessage();
         if (response.equals("No such file")) {
             Stage popupStage = new Stage();
@@ -94,6 +94,7 @@ public class CollaborationController {
             String[] responseData = response.split(" ");
             String filePath = responseData[0];
 //            String access = responseData[1];
+            Config.client.sendMessage("lockDocument " + id);
             RichTextDemo richTextWindow = new RichTextDemo();
             richTextWindow.previousView = "/org/hse/brina/views/collaboration-view.fxml";
             richTextWindow.start((Stage) Enter.getScene().getWindow());

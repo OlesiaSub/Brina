@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -27,6 +28,17 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        File documents = new File(Config.getProjectPath().substring(0, Config.getProjectPath().length() - 19) + "documents");
+        if (!documents.exists()) {
+            try {
+                documents.mkdirs();
+            } catch (SecurityException e) {
+                logger.info("Unable to create documents " + e.getMessage());
+            }
+        } else {
+            logger.info("Documents already exists");
+        }
+
         FXMLLoader loader = new FXMLLoader(Main.class.getResource("views/first-view.fxml"));
         Parent root = loader.load();
         stage.setTitle("Brina");

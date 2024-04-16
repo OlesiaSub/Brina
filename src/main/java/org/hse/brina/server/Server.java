@@ -93,21 +93,22 @@ public class Server {
                         if (userData.length == 3) {
                             String username = userData[1];
                             String password = userData[2];
-                            addUser(username, password);
+                            addUser(username, password, Integer.toString(password.hashCode()));
                             out.println("New user added");
                         } else {
                             out.println("Invalid command format");
                         }
                     } else if (inputLine.startsWith("signUpUser")) {
                         String[] userData = inputLine.split(" ");
-                        if (userData.length == 3) {
+                        if (userData.length == 4) {
                             String username = userData[1];
                             String password = userData[2];
+                            String passwordSalt = userData[3];
                             boolean isUserExist = checkIsUserRegistered(username, password);
                             if (isUserExist) {
                                 out.println("User with the same name already exists");
                             } else {
-                                addUser(username, password);
+                                addUser(username, password, passwordSalt);
                                 out.println("User is registered");
                             }
                         } else {
@@ -157,6 +158,22 @@ public class Server {
                         } else {
                             out.println("Invalid command format");
                         }
+                    } else if (inputLine.startsWith("unlockDocument")) {
+                        String[] userData = inputLine.split(" ");
+                        if (userData.length == 2) {
+                            int documentId = userData[1].hashCode();
+                            setLock(documentId, 0);
+                        } else {
+                            out.println("Invalid command format");
+                        }
+                    } else if (inputLine.startsWith("lockDocument")) {
+                        String[] userData = inputLine.split(" ");
+                        if (userData.length == 2) {
+                            String documentId = userData[1];
+                            setLock(Integer.parseInt(documentId), 1);
+                        } else {
+                            out.println("Invalid command format");
+                        }
                     } else {
                         out.println("Unknown command");
                     }
@@ -174,11 +191,12 @@ public class Server {
             }
         }
 
-        private void addUser(String username, String password) {
-            String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
+        private void addUser(String username, String password, String passwordSalt) {
+            String sql = "INSERT INTO users (username, password, password_salt) VALUES (?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, username);
                 statement.setString(2, password);
+                statement.setString(3, passwordSalt);
                 statement.executeUpdate();
                 logger.info("User added into db");
             } catch (SQLException e) {
@@ -225,7 +243,6 @@ public class Server {
 
             try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery);
                  PreparedStatement updateStatement = connection.prepareStatement(updateQuery)) {
-
                 selectStatement.setString(1, username);
                 selectStatement.setInt(2, fileId);
                 ResultSet resultSet = selectStatement.executeQuery();
@@ -288,6 +305,21 @@ public class Server {
                 logger.error(e.getMessage());
             }
             return documentsMap;
+        }
+
+        private void setLock(Integer id, Integer value) {
+            String sql = "UPDATE user_documents SET lock = 1 WHERE file_id = ?";
+            try (PreparedStatement updateStatement = connection.prepareStatement(sql)) {
+                updateStatement.setInt(1, id);
+                ResultSet resultSet = updateStatement.executeQuery();
+
+                if (resultSet.next()) {
+                    updateStatement.setInt(1, value);
+                    updateStatement.executeUpdate();
+                }
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+            }
         }
 
         public void stop() {

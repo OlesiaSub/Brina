@@ -93,6 +93,7 @@ public class RichTextDemo extends Application {
         Button backBtn = new Button();
         backBtn.getStyleClass().add("back");
         backBtn.setOnAction(e -> {
+            Config.client.sendMessage("unlockDocument " + documentNameField.getText());
             FXMLLoader loader = new FXMLLoader(Main.class.getResource(previousView));
             Parent pageLoader = null;
             try {
@@ -717,6 +718,7 @@ public class RichTextDemo extends Application {
                 logger.error("Error while saving to Documents folder " + e.getMessage());
             }
             Config.client.sendMessage("saveDocument " + fileName + " " + Config.client.getName() + " " + name);
+            Config.client.sendMessage("unlockDocument " + documentNameField.getText());
         }
     }
 

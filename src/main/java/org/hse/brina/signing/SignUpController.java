@@ -12,6 +12,9 @@ import org.hse.brina.Config;
 import org.hse.brina.client.Client;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * SignUpController управляет окном регистрации в приложение,
@@ -64,7 +67,7 @@ public class SignUpController extends SignInController {
         }
         if (isValid) {
             Config.client.setName(username);
-            Config.client.sendMessage("signUpUser " + username + " " + password);
+            Config.client.sendMessage("signUpUser " + username + " " + getHash(password + password.hashCode()) + " " + password.hashCode());
             String response = Config.client.receiveMessage();
             try {
                 if (response.equals("User with the same name already exists")) {
@@ -77,6 +80,22 @@ public class SignUpController extends SignInController {
                 logger.error("Scene configuration file not found. " + e.getMessage());
             }
             stage.setResizable(true);
+        }
+    }
+    private static String getHash(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            logger.info("Unable to hash password");
+            return null;
         }
     }
 }
