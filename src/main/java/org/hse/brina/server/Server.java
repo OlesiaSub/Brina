@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +26,6 @@ public class Server {
             logger.info("Server started. Waiting for clients...");
             String url = "jdbc:sqlite:" + Config.getPathToDB();
             connection = DriverManager.getConnection(url);
-            logger.info("Connection to SQLite has been established");
         } catch (IOException | SQLException e) {
             logger.error(e.getMessage());
         }
@@ -73,7 +73,7 @@ public class Server {
                         if (userData.length == 3) {
                             String username = userData[1];
                             String password = userData[2];
-                            boolean isUserExist = checkIsUserRegistered(username, password);
+                            boolean isUserExist = checkIsUserRegistered(username);
                             if (!isUserExist) {
                                 out.println("User with this name not found");
                             } else {
@@ -104,7 +104,7 @@ public class Server {
                             String username = userData[1];
                             String password = userData[2];
                             String passwordSalt = userData[3];
-                            boolean isUserExist = checkIsUserRegistered(username, password);
+                            boolean isUserExist = checkIsUserRegistered(username);
                             if (isUserExist) {
                                 out.println("User with the same name already exists");
                             } else {
@@ -162,7 +162,7 @@ public class Server {
                         String[] userData = inputLine.split(" ");
                         if (userData.length == 2) {
                             int documentId = userData[1].hashCode();
-                            setLock(documentId, 0);
+                            setLockStatus(documentId, 0);
                         } else {
                             out.println("Invalid command format");
                         }
@@ -170,7 +170,22 @@ public class Server {
                         String[] userData = inputLine.split(" ");
                         if (userData.length == 2) {
                             String documentId = userData[1];
-                            setLock(Integer.parseInt(documentId), 1);
+                            if (getLockStatus(Integer.parseInt(documentId)) == 1) {
+                                out.println("Document closed");
+                            } else {
+                                out.println("Document locked");
+                            }
+                            setLockStatus(Integer.parseInt(documentId), 1);
+                        } else {
+                            out.println("Invalid command format");
+                        }
+                    } else if (inputLine.startsWith("getLock")) {
+                        String[] userData = inputLine.split(" ");
+                        if (userData.length == 2) {
+                            String documentName = userData[1];
+                            String[] filename = documentName.split("\\.");
+                            int lockStatus = getLockStatus(filename[0].hashCode());
+                            out.println(lockStatus);
                         } else {
                             out.println("Invalid command format");
                         }
@@ -275,7 +290,7 @@ public class Server {
             }
         }
 
-        private boolean checkIsUserRegistered(String username, String password) {
+        private boolean checkIsUserRegistered(String username) {
             String sql = "SELECT * FROM users WHERE username = ?";
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, username);
@@ -300,6 +315,7 @@ public class Server {
                     String filePath = resultSet.getString("file_path");
                     String access = resultSet.getString("access");
                     documentsMap.put(access + filename, filePath);
+                    logger.info(filePath);
                 }
             } catch (SQLException e) {
                 logger.error(e.getMessage());
@@ -307,7 +323,7 @@ public class Server {
             return documentsMap;
         }
 
-        private void setLock(Integer id, Integer value) {
+        private void setLockStatus(Integer id, Integer value) {
             String sql = "UPDATE user_documents SET lock = 1 WHERE file_id = ?";
             try (PreparedStatement updateStatement = connection.prepareStatement(sql)) {
                 updateStatement.setInt(1, id);
@@ -321,6 +337,22 @@ public class Server {
                 logger.error(e.getMessage());
             }
         }
+
+        private int getLockStatus(Integer id) {
+            String sql = "SELECT lock FROM user_documents WHERE file_id = ?";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setInt(1, id);
+                ResultSet resultSet = statement.executeQuery();
+
+                if (resultSet.next()) {
+                    return resultSet.getInt("lock");
+                }
+            } catch (SQLException e) {
+                logger.error(e.getMessage());
+            }
+            return -1;
+        }
+
 
         public void stop() {
             try {

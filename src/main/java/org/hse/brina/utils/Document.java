@@ -8,7 +8,7 @@ public class Document {
 
     public Document(String access, String name, STATUS status) {
         this.access = access;
-        this.name = new StringBuilder(" " + name);
+        this.name = new StringBuilder( name);
         this.status = status;
     }
 

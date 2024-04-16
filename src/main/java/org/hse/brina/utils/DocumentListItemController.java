@@ -7,6 +7,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.Text;
+import org.hse.brina.Config;
 
 import java.net.URL;
 import java.util.Objects;
@@ -28,11 +29,21 @@ public class DocumentListItemController implements Initializable {
         documentName.setText(document.getName());
         HBox.setHgrow(nameHBox, Priority.ALWAYS);
         HBox.setHgrow(globalHBox, Priority.ALWAYS);
-        document.setStatus("unlocked");
-        if (document.getAccess().equals("r")) {
-            accessText.setText("reader");
+        Config.client.sendMessage("getLock " + documentName.getText());
+        String response = Config.client.receiveMessage();
+        if (response.equals("0")) {
+            document.setStatus("unlocked");
+            Image lockedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/hse/brina/assets/unlocked.png")));
+            statusImage.setImage(lockedImage);
+        } else {
+            document.setStatus("locked");
             Image lockedImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/org/hse/brina/assets/locked.png")));
             statusImage.setImage(lockedImage);
+        }
+        if (document.getAccess().equals("r")) {
+            accessText.setText("reader");
+        } else{
+            accessText.setText("writer");
         }
     }
 

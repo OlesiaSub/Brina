@@ -93,6 +93,7 @@ public class RichTextDemo extends Application {
         Button backBtn = new Button();
         backBtn.getStyleClass().add("back");
         backBtn.setOnAction(e -> {
+            logger.info(documentNameField.getText());
             Config.client.sendMessage("unlockDocument " + documentNameField.getText());
             FXMLLoader loader = new FXMLLoader(Main.class.getResource(previousView));
             Parent pageLoader = null;

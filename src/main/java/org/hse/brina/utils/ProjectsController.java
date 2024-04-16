@@ -53,12 +53,14 @@ public class ProjectsController implements Initializable {
                 HBox documentHBox = loader.load();
                 DocumentListItemController controller = loader.getController();
                 controller.setData(document);
+
                 controller.nameHBox.setOnMouseClicked(event -> {
-                    String[] filename = controller.documentName.getText().split(".");
+                   String[] filename = controller.documentName.getText().split("\\.");
                     Config.client.sendMessage("lockDocument " + filename[0].hashCode());
+                    String response = Config.client.receiveMessage();
                     String key = controller.documentName.getText();
-                    String value = userDocumentsMap.get("w"+key);
-                    if (key != null && value != null && !(Objects.equals(key, " ") || key.isEmpty()) && !(Objects.equals(value, " ") || value.isEmpty())) {
+                    String value = userDocumentsMap.get(controller.accessText.getText().charAt(0)+key);
+                    if (!response.equals("Document closed") && key != null && value != null && !(Objects.equals(key, " ") || key.isEmpty()) && !(Objects.equals(value, " ") || value.isEmpty())) {
                         RichTextDemo richTextWindow = new RichTextDemo();
                         richTextWindow.previousView = "/org/hse/brina/views/projects-view.fxml";
                         richTextWindow.start((Stage) documentList.getScene().getWindow());
