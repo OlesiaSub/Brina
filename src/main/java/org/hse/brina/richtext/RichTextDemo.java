@@ -69,7 +69,6 @@ public class RichTextDemo extends Application {
     public Stage mainStage;
     private StringBuilder documentId = new StringBuilder();
     private TextField documentNameField = new TextField();
-    public StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> docArea;
     private Scene mainScene;
 
     {
@@ -85,7 +84,6 @@ public class RichTextDemo extends Application {
 
     public void start(Stage primaryStage) {
         mainStage = primaryStage;
-        docArea = area.getDocument();
         Button loadBtn = createButton("loadfile", this::loadDocument, "Load document.\n\n" + "Note: the demo will load only previously-saved \"" + RTFX_FILE_EXTENSION + "\" files. " + "This file format is abitrary and may change across versions.");
         Button saveBtn = createButton("savefile", this::saveDocument, "Save document.\n\n" + "Note: the demo will save the area's content to a \"" + RTFX_FILE_EXTENSION + "\" file. " + "This file format is abitrary and may change across versions.");
         CheckBox wrapToggle = new CheckBox("Wrap");
@@ -377,35 +375,28 @@ public class RichTextDemo extends Application {
             popupVoiceStage.showAndWait();
         });
 
-        Button chatGPTButton = new Button();
-        chatGPTButton.getStyleClass().add("chat-gpt");
-        chatGPTButton.setPrefWidth(30);
-        chatGPTButton.setPrefHeight(30);
-        chatGPTButton.setOnAction(e -> {
-            Stage popupChatStage = new Stage();
-            popupChatStage.initOwner(primaryStage);
-            popupChatStage.initModality(Modality.APPLICATION_MODAL);
-            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/org/hse/brina/views/chat-gpt-view.fxml"));
-            Parent root = null;
-            try {
-                root = loader.load();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-            Scene scene = new Scene(root, mainStage.getScene().getWidth(), mainStage.getScene().getHeight());
-            popupChatStage.setScene(scene);
-            try (InputStream iconStream = getClass().getResourceAsStream("/org/hse/brina/assets/small-icon.png")) {
-                Image icon = new Image(iconStream);
-                popupChatStage.getIcons().add(icon);
-            } catch (Exception error) {
-                logger.error(error.getMessage());
-            }
-            popupChatStage.showAndWait();
+        ContextMenu contextMenu = area.getContextMenu();
+        contextMenu.getItems().clear();
+        MenuItem firstOption = new MenuItem("1 option");
+        firstOption.setOnAction(e -> {
+            String text = area.getSelectedText();
+            logger.info("1 chat GPT option with text: " + text);
+//            area.replaceSelection();
+        });
+        MenuItem secondOption = new MenuItem("2 option");
+        secondOption.setOnAction(e -> {
+            String text = area.getSelectedText();
+            logger.info("2 chat GPT option with text: " + text);
+//            area.replaceSelection();
+        });
+        contextMenu.getItems().addAll(firstOption, secondOption);
+        area.setOnContextMenuRequested(e -> {
+            contextMenu.show(area, e.getScreenX(), e.getScreenY());
         });
 
         featuresHBox.setStyle("-fx-background-color: white; -fx-alignment: TOP_RIGHT; -fx-spacing: 1;");
         featuresHBox.setAlignment(Pos.TOP_RIGHT);
-        featuresHBox.getChildren().addAll(recordingButton, chatGPTButton);
+        featuresHBox.getChildren().addAll(recordingButton);
         featuresHBox.setPrefHeight(30);
         featuresHBox.setPrefWidth(280);
         featuresHBox.setMinWidth(70);

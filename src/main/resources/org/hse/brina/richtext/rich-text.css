@@ -106,9 +106,5 @@
 }
 
 .microphone{
-    -fx-background-image: url(mic1.png);
-}
-
-.chat-gpt{
-    -fx-background-image: url(chat-gpt.png);
+    -fx-background-image: url(mic.png);
 }
