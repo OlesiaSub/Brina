@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox spacing="10" style="-fx-background-color: white" stylesheets="@../css/main-page-style.css"
+      xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.hse.brina.utils.AudioRecognitionController">
+   <HBox alignment="CENTER" spacing="10" fx:id="textHBox">
+         <Text text="Audio file" />
+         <Button fx:id="loadAudio" text="Load" />
+         <Button fx:id="speechRecognitionButton" text="Speech Recognition" />
+   </HBox>
+   <TextArea fx:id="resultArea"/>
+   <HBox alignment="CENTER_RIGHT" fx:id="pasteHBox">
+      <Button fx:id="Paste" text="Paste" />
+   </HBox>
+</VBox>

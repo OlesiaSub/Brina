@@ -104,3 +104,11 @@
 .toggle-button.align-justify {
     -fx-background-image: url(align-justify.png);
 }
+
+.microphone{
+    -fx-background-image: url(mic1.png);
+}
+
+.chat-gpt{
+    -fx-background-image: url(chat-gpt.png);
+}

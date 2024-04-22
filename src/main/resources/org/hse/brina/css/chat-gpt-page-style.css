@@ -1,0 +1,51 @@
+.back{
+    -fx-background-color: white;
+    -fx-background-image: url(/org/hse/brina/richtext/back.png);
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+
+.white-box{
+    -fx-background-color: white;
+}
+
+.menu-button {
+    -fx-background-color: white;
+    -fx-font-size: 16px;
+    -fx-text-fill: #101d2f;
+    -fx-border-color: #3d6dac;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-margin-right: 10px;
+}
+
+.menu-item, .menu-item:hover{
+    -fx-background-color: white;
+    -fx-font-size: 16px;
+    -fx-text-fill: #101d2f;
+}
+
+.menu-item:focused{
+    -fx-background-color: #3d6dac;
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+}
+
+.go-button {
+    -fx-background-color: white;
+    -fx-background-image: url(/org/hse/brina/assets/send.png);
+    -fx-background-size: cover;
+    -fx-background-position: center;
+}
+
+.ok-button {
+    -fx-background-color: #3d6dac;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-border-color: #3d6dac;
+    -fx-border-width: 1px;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-margin-right: 10px;
+}

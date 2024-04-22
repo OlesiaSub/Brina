@@ -69,6 +69,7 @@ public class RichTextDemo extends Application {
     public Stage mainStage;
     private StringBuilder documentId = new StringBuilder();
     private TextField documentNameField = new TextField();
+    public StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> docArea;
     private Scene mainScene;
 
     {
@@ -84,6 +85,7 @@ public class RichTextDemo extends Application {
 
     public void start(Stage primaryStage) {
         mainStage = primaryStage;
+        docArea = area.getDocument();
         Button loadBtn = createButton("loadfile", this::loadDocument, "Load document.\n\n" + "Note: the demo will load only previously-saved \"" + RTFX_FILE_EXTENSION + "\" files. " + "This file format is abitrary and may change across versions.");
         Button saveBtn = createButton("savefile", this::saveDocument, "Save document.\n\n" + "Note: the demo will save the area's content to a \"" + RTFX_FILE_EXTENSION + "\" file. " + "This file format is abitrary and may change across versions.");
         CheckBox wrapToggle = new CheckBox("Wrap");
@@ -347,7 +349,70 @@ public class RichTextDemo extends Application {
         shareButton.setAlignment(Pos.TOP_RIGHT);
         shareButton.setStyle("-fx-background-color: #3d6dac; -fx-text-fill: white; -fx-font-size: 13px; fx-border-color: #3d6dac; -fx-border-width: 1px; -fx-background-radius: 8px; -fx-border-radius: 8px; -fx-margin-right: 10px;");
         documentNameHBox.setStyle("-fx-spacing: 10");
-        documentNameHBox.getChildren().addAll(documentName, shareButton);
+
+        HBox featuresHBox = new HBox();
+        Button recordingButton = new Button();
+        recordingButton.getStyleClass().add("microphone");
+        recordingButton.setPrefWidth(30);
+        recordingButton.setPrefHeight(30);
+        recordingButton.setOnAction(e -> {
+            Stage popupVoiceStage = new Stage();
+            popupVoiceStage.initOwner(primaryStage);
+            popupVoiceStage.initModality(Modality.APPLICATION_MODAL);
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/org/hse/brina/views/audio-recognition-view.fxml"));
+            Parent root = null;
+            try {
+                root = loader.load();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            Scene scene = new Scene(root, mainStage.getScene().getWidth(), mainStage.getScene().getHeight());
+            popupVoiceStage.setScene(scene);
+            try (InputStream iconStream = getClass().getResourceAsStream("/org/hse/brina/assets/small-icon.png")) {
+                Image icon = new Image(iconStream);
+                popupVoiceStage.getIcons().add(icon);
+            } catch (Exception error) {
+                logger.error(error.getMessage());
+            }
+            popupVoiceStage.showAndWait();
+        });
+
+        Button chatGPTButton = new Button();
+        chatGPTButton.getStyleClass().add("chat-gpt");
+        chatGPTButton.setPrefWidth(30);
+        chatGPTButton.setPrefHeight(30);
+        chatGPTButton.setOnAction(e -> {
+            Stage popupChatStage = new Stage();
+            popupChatStage.initOwner(primaryStage);
+            popupChatStage.initModality(Modality.APPLICATION_MODAL);
+            FXMLLoader loader = new FXMLLoader(Main.class.getResource("/org/hse/brina/views/chat-gpt-view.fxml"));
+            Parent root = null;
+            try {
+                root = loader.load();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            Scene scene = new Scene(root, mainStage.getScene().getWidth(), mainStage.getScene().getHeight());
+            popupChatStage.setScene(scene);
+            try (InputStream iconStream = getClass().getResourceAsStream("/org/hse/brina/assets/small-icon.png")) {
+                Image icon = new Image(iconStream);
+                popupChatStage.getIcons().add(icon);
+            } catch (Exception error) {
+                logger.error(error.getMessage());
+            }
+            popupChatStage.showAndWait();
+        });
+
+        featuresHBox.setStyle("-fx-background-color: white; -fx-alignment: TOP_RIGHT; -fx-spacing: 1;");
+        featuresHBox.setAlignment(Pos.TOP_RIGHT);
+        featuresHBox.getChildren().addAll(recordingButton, chatGPTButton);
+        featuresHBox.setPrefHeight(30);
+        featuresHBox.setPrefWidth(280);
+        featuresHBox.setMinWidth(70);
+        featuresHBox.setMaxWidth(500);
+        HBox.setHgrow(featuresHBox, Priority.ALWAYS);
+
+        documentNameHBox.getChildren().addAll(documentName, shareButton, featuresHBox);
 
         VBox upperToolbarVBox = new VBox();
         upperToolbarVBox.setStyle("-fx-background-color: white; -fx-alignment: TOP_LEFT; -fx-spacing: 1px;");
@@ -381,7 +446,7 @@ public class RichTextDemo extends Application {
         if (RichTextDemo.class.getResource("rich-text.css") != null) {
             scene.getStylesheets().add(RichTextDemo.class.getResource("rich-text.css").toExternalForm());
         } else {
-            System.out.println("rich-text.css not found!");
+            logger.info("rich-text.css not found!");
         }
 
         primaryStage.setScene(scene);
@@ -743,7 +808,6 @@ public class RichTextDemo extends Application {
 
     public void saveInRTFXFormat(File file) {
         StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle> doc = area.getDocument();
-
         // Use the Codec to save the document in a binary format
         area.getStyleCodecs().ifPresent(codecs -> {
             Codec<StyledDocument<ParStyle, Either<String, LinkedImage>, TextStyle>> codec = ReadOnlyStyledDocument.codec(codecs._1, codecs._2, area.getSegOps());

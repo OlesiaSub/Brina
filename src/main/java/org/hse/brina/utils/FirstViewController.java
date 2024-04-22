@@ -42,7 +42,7 @@ public class FirstViewController implements Initializable {
         delay.play();
     }
 
-    private void loadScene(Stage stage, String fxmlView) throws IOException {
+    public void loadScene(Stage stage, String fxmlView) throws IOException {
         FXMLLoader loader = new FXMLLoader(Main.class.getResource(fxmlView));
         Parent logInLoader = loader.load();
         Scene scene = new Scene(logInLoader, Config.getDefaultWidth(), Config.getDefaultHeight());
