@@ -16,7 +16,7 @@ public class GPTServer {
                 .uri(new URI("https://llm.api.cloud.yandex.net/foundationModels/v1/completion"))
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .header("Content-Type", "application/json")
-                .header("Authorization", "Api-key AQVNxI5KRamQtzStixTl2LoxbkdWRhwYoqPsYv9C")
+                .header("Authorization", "Api-key --your_api-key--")
                 .build();
 
         HttpClient client = HttpClient.newHttpClient();
