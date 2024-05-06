@@ -10,13 +10,13 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class GPTServer {
-    public static void getGPTProcessing(String query, String text) throws URISyntaxException, IOException, InterruptedException {
-        String json = constructRequest(query, text);
+    public static String getGPTProcessing(String query, String text) throws URISyntaxException, IOException, InterruptedException {
+        String json = constructRequest("\"" + query + "\"", "\"" + text + "\"");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI("https://llm.api.cloud.yandex.net/foundationModels/v1/completion"))
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .header("Content-Type", "application/json")
-                .header("Authorization", "Api-key --your_api-key--")
+                .header("Authorization", "Api-key --your_api-key--") //TODO
                 .build();
 
         HttpClient client = HttpClient.newHttpClient();
@@ -28,8 +28,7 @@ public class GPTServer {
         responseBegin = responseBody.indexOf(":", responseBegin) + 2;
         int responseEnd = responseBody.indexOf("\"", responseBegin);
 
-        String responseText = responseBody.substring(responseBegin, responseEnd);
-        System.out.println(responseText);
+        return responseBody.substring(responseBegin, responseEnd);
     }
 
     @NotNull

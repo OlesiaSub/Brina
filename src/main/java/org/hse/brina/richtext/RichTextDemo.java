@@ -39,11 +39,14 @@ import org.fxmisc.richtext.TextExt;
 import org.fxmisc.richtext.model.*;
 import org.hse.brina.Config;
 import org.hse.brina.Main;
+import org.python.antlr.ast.Str;
 import org.reactfx.SuspendableNo;
 import org.reactfx.util.Either;
 import org.reactfx.util.Tuple2;
+import org.hse.brina.yandexGPT.server.GPTServer;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -131,6 +134,7 @@ public class RichTextDemo extends Application {
         Button insertImageBtn = createButton("insertimage", this::insertImage, "Insert Image");
         Button increaseIndentBtn = createButton("increaseIndent", this::increaseIndent, "Increase indent");
         Button decreaseIndentBtn = createButton("decreaseIndent", this::decreaseIndent, "Decrease indent");
+
         ToggleGroup alignmentGrp = new ToggleGroup();
         ToggleButton alignLeftBtn = createToggleButton(alignmentGrp, "align-left", this::alignLeft, "Align left");
         ToggleButton alignCenterBtn = createToggleButton(alignmentGrp, "align-center", this::alignCenter, "Align center");
@@ -377,19 +381,20 @@ public class RichTextDemo extends Application {
 
         ContextMenu contextMenu = area.getContextMenu();
         contextMenu.getItems().clear();
-        MenuItem firstOption = new MenuItem("1 option");
+        MenuItem firstOption = new MenuItem("Rewrite text in a formal style");
         firstOption.setOnAction(e -> {
-            String text = area.getSelectedText();
-            logger.info("1 chat GPT option with text: " + text);
-//            area.replaceSelection();
+            showResponse("Rewrite text in a formal style");
         });
-        MenuItem secondOption = new MenuItem("2 option");
+        MenuItem secondOption = new MenuItem("Correct grammatical errors and spelling mistakes");
         secondOption.setOnAction(e -> {
-            String text = area.getSelectedText();
-            logger.info("2 chat GPT option with text: " + text);
-//            area.replaceSelection();
+            showResponse("Иправь все ошибки и опечатки и пришли исправленный текст");
         });
-        contextMenu.getItems().addAll(firstOption, secondOption);
+        MenuItem thirdOption = new MenuItem("Make the text more concise");
+        thirdOption.setOnAction(e -> {
+            showResponse("Make the text more concise");
+        });
+        MenuItem fourthOption = new MenuItem("Translate text into...");
+        contextMenu.getItems().addAll(firstOption, secondOption, thirdOption);
         area.setOnContextMenuRequested(e -> {
             contextMenu.show(area, e.getScreenX(), e.getScreenY());
         });
@@ -444,6 +449,67 @@ public class RichTextDemo extends Application {
         mainScene = scene;
         area.requestFocus();
         primaryStage.show();
+    }
+
+    private void showResponse(String option) {
+        String text = area.getSelectedText();
+        try {
+            String textGPT = GPTServer.getGPTProcessing(option, text);
+            Stage GPTPopupStage = new Stage();
+            GPTPopupStage.initOwner(mainStage);
+            GPTPopupStage.initModality(Modality.APPLICATION_MODAL);
+            Text GPTResultText = new Text("GPT result:");
+            GPTResultText.setStyle("-fx-font-size: 16px");
+            GPTResultText.setFill(Color.BLACK);
+            TextArea GPTArea = new TextArea();
+            GPTArea.setText(textGPT);
+            GPTArea.setStyle("-fx-font-size: 16px");
+            GPTArea.setMaxWidth(300);
+            GPTArea.setMaxHeight(200);
+            GPTArea.setPrefHeight(200);
+            GPTArea.setPrefWidth(300);
+            VBox vBox = new VBox();
+            vBox.setAlignment(Pos.CENTER);
+            vBox.setSpacing(10);
+            vBox.setMaxWidth(300);
+            Button pasteButton = new Button();
+            pasteButton.setText("Paste result");
+            pasteButton.setOnAction(event -> {
+                area.replaceSelection(GPTArea.getText());
+                GPTPopupStage.close();
+            });
+            vBox.getStyleClass().add("white-box");
+            vBox.getChildren().addAll(GPTResultText, GPTArea, pasteButton);
+
+            int stageHeight = 250;
+            int stageWidth = 310;
+            Scene popupScene = new Scene(vBox, stageWidth, stageHeight);
+            popupScene.getStylesheets().add("/org/hse/brina/css/sign-in-page-style.css");
+            GPTPopupStage.setScene(popupScene);
+            if (mainScene != null) {
+                Window previousWindow = mainScene.getWindow();
+                double centerX = previousWindow.getX() + (previousWindow.getWidth() - stageWidth) / 2;
+                double centerY = previousWindow.getY() + (previousWindow.getHeight() - stageHeight) / 2;
+                GPTPopupStage.setX(centerX);
+                GPTPopupStage.setY(centerY);
+            }
+            try (InputStream iconStream = getClass().getResourceAsStream("/org/hse/brina/assets/small-icon.png")) {
+                Image icon = new Image(iconStream);
+                GPTPopupStage.getIcons().add(icon);
+            } catch (Exception exe) {
+                logger.error(exe.getMessage());
+            }
+
+            GPTPopupStage.setResizable(false);
+            GPTPopupStage.showAndWait();
+
+        } catch (URISyntaxException ex) {
+            logger.info("Error while constructing request");
+        } catch (IOException ex) {
+            logger.info("Error while sending request");
+        } catch (InterruptedException ex) {
+            logger.info(ex.getMessage());
+        }
     }
 
     private void showPopupWindow(Stage primaryStage, TextField documentName) {
