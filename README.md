@@ -43,3 +43,4 @@ Modify options —> Add VM options: `--module-path "path\openjfx-17.0.10_windows
 &nbsp; &nbsp; &nbsp; ![#101d2f](https://placehold.co/15x15/101d2f/101d2f.png) &nbsp; &nbsp;&nbsp; &nbsp; &nbsp;&nbsp; ![#194f93](https://placehold.co/15x15/194f93/194f93.png)  &nbsp;&nbsp;&nbsp; &nbsp; &nbsp;&nbsp; ![#3d6dac](https://placehold.co/15x15/3d6dac/3d6dac.png) &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp;![#80aad7](https://placehold.co/15x15/80aad7/80aad7.png) &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;![#f6ecde](https://placehold.co/15x15/f6ecde/f6ecde.png) &nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; ![#e0850c](https://placehold.co/15x15/e0850c/e0850c.png)
 
 `#101d2f` `#194f93` `#3d6dac` `#80aad7` `#f6ecde` `#e0850c`
+

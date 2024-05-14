@@ -15,3 +15,4 @@ public class LinkedImageOps<S> extends NodeSegmentOpsBase<LinkedImage, S> {
     }
 
 }
+

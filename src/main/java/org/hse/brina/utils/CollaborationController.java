@@ -121,3 +121,4 @@ public class CollaborationController {
         VBox.setVgrow(IDVBox, Priority.ALWAYS);
     }
 }
+

@@ -167,3 +167,4 @@ class ParStyle {
         return foldCount > 0;
     }
 }
+

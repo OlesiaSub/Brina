@@ -52,3 +52,4 @@ public class DocumentListItemController implements Initializable {
 
     }
 }
+

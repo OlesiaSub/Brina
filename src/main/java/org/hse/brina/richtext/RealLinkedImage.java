@@ -56,3 +56,4 @@ public class RealLinkedImage implements LinkedImage {
         return result;
     }
 }
+

@@ -48,3 +48,4 @@ public interface LinkedImage {
 
     Node createNode();
 }
+

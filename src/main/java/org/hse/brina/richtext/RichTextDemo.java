@@ -1053,3 +1053,4 @@ public class RichTextDemo extends Application {
         }
     }
 }
+

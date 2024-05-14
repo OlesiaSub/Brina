@@ -19,3 +19,4 @@ public class EmptyLinkedImage implements LinkedImage {
         throw new AssertionError("Unreachable code");
     }
 }
+
